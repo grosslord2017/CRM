@@ -1,0 +1,67 @@
+{% extends "crm/base.html" %}
+
+{% block style %}
+
+    /* ---------------- div class="row" ----------- */
+    * {
+        box-sizing: border-box;
+    }
+
+    /* Create two unequal columns that floats next to each other */
+    .column {
+        float: left;
+        padding: 10px;
+        height: 300px; /* Should be removed. Only for demonstration */
+    }
+
+    .left {
+        width: 25%;
+    }
+
+    .right {
+        width: 75%;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    .hot {
+        color: red;
+    }
+{% endblock %}
+
+{% block body %}
+
+    {% if user.is_active %}
+        <div class="row">
+            <div class="column left" style="background-color:#aaa;">
+                <h2>{{ profile.name }} {{ profile.surname }} {{ profile.patronymic }}</h2>
+                <p>
+                    <a href="{% url 'my_task' %}">Мои задачи</a>
+                </p>
+                <p>
+                    <a href="{% url 'task_form' %}">Поставить задачу</a>
+                </p>
+                <p>
+                    <a href="{% url 'edit_profile' %}">Редактировать профиль</a>
+                </p>
+            </div>
+            <div class="column right" style="background-color:#bbb;">
+                <p>Список поставленных задач</p>
+                {% for hot_task in user_hot_task %}
+                    <div class="hot">
+                        <p><strong>{{ hot_task.subject }}</strong></p>
+                        <p>{{ hot_task.description }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <h1>user not logined</h1>
+    {% endif %}
+
+{% endblock %}

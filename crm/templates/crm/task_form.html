@@ -1,0 +1,114 @@
+{% extends "crm/base.html" %}
+
+{% block style %}
+
+     body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: grey;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    /* Add padding to containers */
+    .container {
+        border-radius: 5px;
+        padding: 16px;
+        background-color: white;
+    }
+
+    .errorlist {
+        color: red;
+    }
+
+    input[type=text]:focus, input[type=date]:focus {
+        background-color: #ddd;
+        outline: none;
+    }
+
+    /* Overwrite default styles of hr */
+    hr {
+        border: 1px solid #f1f1f1;
+        margin-bottom: 25px;
+    }
+
+    /* Set a style for the submit button */
+    .set {
+        background-color: #4CAF50;
+        color: white;
+        padding: 16px 20px;
+        margin: 8px 0;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        opacity: 0.9;
+    }
+
+    .set:hover {
+        opacity: 1;
+    }
+
+    /* Add a blue text color to links */
+    a {
+        color: dodgerblue;
+    }
+
+    input[type=text], input[type=date], select, textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-top: 6px;
+        margin-bottom: 16px;
+        resize: vertical;
+    }
+
+    input[type=date] {
+        width: 300px;
+        margin-right: 100%;
+    }
+
+    textarea {
+        display: block;
+        width: 100%;
+        height: 200px;
+    }
+
+{% endblock %}
+
+{% block body %}
+
+    <h1>Fill this form</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="container">
+                    <hr>
+                        {% for f in form %}
+
+                            {% if f.name == 'final_date' %}
+                                <label for="{{ f.name }}"><i>{{ f.name }}:</i></label>
+                                <input type="date" min="2022-01-01" name="{{ f.name }}" required>
+                            {% elif f.name == 'executor' %}
+                                <label for="{{ f.name }}"><i>{{ f.name }}:</i></label>
+                                <select name="executor" required>
+                                    {% for prof in profile %}
+                                        <option value="{{ prof.id }}">{{ prof.name}} {{ prof.surname }}</option>
+                                    {% endfor %}
+                                </select>
+                            {% elif f.name == 'description' %}
+                                <label for="{{ f.name }}"><i>{{ f.name }}:</i></label>
+                                <textarea name="{{ f.name }}" required></textarea>
+                            {% else %}
+                                 <label for="{{ f.name }}"><i>{{ f.name }}:</i></label>
+                                <input type="text" name="{{ f.name }}" required>
+                            {% endif %}
+
+                        {% endfor %}
+
+                    <p><button type="submit" class="set">set the task</button></p>
+                </div>
+        </form>
+
+{% endblock %}
