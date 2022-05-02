@@ -41,7 +41,10 @@
             <div class="column left" style="background-color:#aaa;">
                 <h2>{{ profile.name }} {{ profile.surname }} {{ profile.patronymic }}</h2>
                 <p>
-                    <a href="{% url 'my_task' %}">Мои задачи</a>
+                    <a href="{% url 'my_task' %}">Задачи поставленные мне</a>
+                </p>
+                <p>
+                    <a href="{% url 'supervising_tasks' %}">Мной поставленные задачи</a>
                 </p>
                 <p>
                     <a href="{% url 'task_form' %}">Поставить задачу</a>
@@ -49,6 +52,11 @@
                 <p>
                     <a href="{% url 'edit_profile' %}">Редактировать профиль</a>
                 </p>
+                {% if user.is_superuser %}
+                    <p>
+                        <a href="{% url 'archive' %}">Архив</a>
+                    </p>
+                {% endif %}
             </div>
             <div class="column right" style="background-color:#bbb;">
                 <p>Список поставленных задач</p>
