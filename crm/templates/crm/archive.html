@@ -1,0 +1,54 @@
+{% extends "crm/base.html" %}
+
+{% block style %}
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        width: 100%;
+        border: 1px solid #ddd;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even){background-color: #f2f2f2}
+
+    .title {
+        color: blue;
+    }
+{% endblock %}
+
+
+{% block body %}
+
+    <h2>Архив задач</h2>
+
+    <div style="overflow-x:auto;">
+        <table>
+
+            <tr class="title">
+                <th>Дата начала</th>
+                <th>Тема</th>
+                <th>Постановщик</th>
+                <th>Исполнитель</th>
+                <th>Описание</th>
+                <th>Дата завершения</th>
+            </tr>
+
+            {% for record in archive %}
+                <tr>
+                    <th>{{ record.date_create }}</th>
+                    <th>{{ record.subject }}</th>
+                    <th>{{ record.task_manager }}</th>
+                    <th>{{ record.executor }}</th>
+                    <th>{{ record.description }}</th>
+                    <th>{{ record.date_complite }}</th>
+                </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+
+{% endblock %}

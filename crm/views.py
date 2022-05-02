@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponseRedirect, HttpResponse
+from django.shortcuts import render, HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth import login, authenticate, logout
 from .models import Profile, Task, ArchiveTask
 from django.contrib.auth.decorators import login_required
@@ -108,7 +108,7 @@ def task_create(request):
                 executor_id=date_form['executor'].id,
             )
             task.save()
-            return HttpResponseRedirect('')
+            return HttpResponseRedirect('/')
     else:
         form = TaskForm()
     return render(request, 'crm/task_form.html', {'form': form, 'profile': profile})
@@ -118,6 +118,12 @@ def my_task(request):
     user = request.user.id
     tasks = Task.objects.filter(executor_id=user, status_completed=False).all()
     return render(request, 'crm/my_task.html', {'tasks': tasks})
+
+@login_required
+def supervising_tasks(request):
+    user = request.user.id
+    tasks = Task.objects.filter(task_manager_id=user).all()
+    return render(request, 'crm/supervising_tasks.html', {'tasks': tasks})
 
 def my_task_complite(request, pk):
     task = Task.objects.get(id=pk)
@@ -136,4 +142,11 @@ def my_task_complite(request, pk):
 
     # нужно подумать убирать ли сразу выполненную и перенесенную задачу из раздела Task
 
-    return HttpResponseRedirect('/crm/my_task')
+    return HttpResponseRedirect('/my_task')
+
+def views_archive(request):
+    if request.user.is_superuser:
+        archive = ArchiveTask.objects.order_by('date_create')
+        return render(request, 'crm/archive.html', {'archive': archive})
+    else:
+        raise Http404
