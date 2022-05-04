@@ -4,7 +4,7 @@ from .models import Profile, Task, ArchiveTask
 from django.contrib.auth.decorators import login_required
 from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskForm
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 
 # Create your views here.
 
@@ -47,10 +47,15 @@ def user_login(request):
     return render(request, 'crm/login.html', {'form': form})
 
 def user_registration(request):
+    group = Group.objects.all()
+    print(group)
     if request.method == 'POST':
+        a = request.POST
+        print(a)
         user_form = UserRegistrationForm(request.POST)
         user_filling_form = ProfileFillingForm(request.POST)
         if user_form.is_valid() and user_filling_form.is_valid():
+            print('all_valid')
             profile = user_filling_form.cleaned_data
             # Create a new user object but avoid saving it yet
             new_user = user_form.save(commit=False)
@@ -60,23 +65,36 @@ def user_registration(request):
             new_user.save()
             # create empty profile for new user (user=new_user) - привязка по id к созданому юзеру
             # Create the user profile
+            # Profile.objects.create(
+            #     user=new_user,
+            #     name=profile['name'],
+            #     surname=profile['surname'],
+            #     patronymic=profile['patronymic'],
+            #     telephone=profile['telephone'],
+            #     department=profile['department'],
+            #     position=profile['position'],
+            # )
+            print(profile['department'])
             Profile.objects.create(
                 user=new_user,
                 name=profile['name'],
                 surname=profile['surname'],
                 patronymic=profile['patronymic'],
                 telephone=profile['telephone'],
-                department=profile['department'],
+                department_id=profile['department'].id,
                 position=profile['position'],
             )
             return render(request, 'crm/registration_done.html', {'new_user': new_user})
     else:
         user_form = UserRegistrationForm()
         user_filling_form = ProfileFillingForm()
-    return render(request, 'crm/registration.html', {'user_form': user_form, 'user_filling_form': user_filling_form})
+    return render(request, 'crm/registration.html', {'user_form': user_form,
+                                                     'user_filling_form': user_filling_form,
+                                                     'group': group})
 
 @login_required
 def edit_profile(request):
+    department = Group.objects.all()
     if request.method == 'POST':
         user_form = UserEditForm(instance=request.user, data=request.POST)
         profile_form = ProfileFillingForm(instance=request.user.profile, data=request.POST)
@@ -84,13 +102,15 @@ def edit_profile(request):
             user_form.save()
             profile_form.save()
             messages.success(request, 'Profile updated successfully')
-            return HttpResponseRedirect('')
+            return HttpResponseRedirect('/')
         else:
             messages.error(request, 'Error updating your profile')
     else:
         user_form = UserEditForm(instance=request.user)
         profile_form = ProfileFillingForm(instance=request.user.profile)
-    return render(request, 'crm/edit_profile.html', {'user_form': user_form, 'profile_form': profile_form})
+    return render(request, 'crm/edit_profile.html', {'user_form': user_form,
+                                                     'profile_form': profile_form,
+                                                     'deprtment': department})
 
 # пока работает нормлаьно, но возможно надо будет допиливать!!!! и добавить проверку на дату из прошлого
 @login_required

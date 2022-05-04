@@ -91,11 +91,16 @@
 
                     {% for f in user_filling_form %}
                         {% if f.name == 'department' %}
+
                             <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
                             <select id="department" name="{{ f.name }}">
-                                <option value="IT">IT</option>
-                                <option value="trade">Trade</option>
+<!--                                <option value="1">1</option>-->
+<!--                                <option value="2">2</option>-->
+                                {% for g in group %}
+                                    <option value="{{ g.id }}">{{ g }}</option>
+                                {% endfor %}
                             </select>
+
                         {% elif f.name == 'position' %}
                             <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
                             <select id="position" name="{{ f.name }}">
