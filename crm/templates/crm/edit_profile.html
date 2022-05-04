@@ -91,8 +91,8 @@
                         {% if f.name == 'department' %}
                             <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
                             <select id="department" name="{{ f.name }}">
-                                {% for dep in department %}
-                                <option value="{{ dep.id }}">{{ dep.name }}</option>
+                                {% for d in group %}
+                                    <option value="{{ d.id }}">{{ d }}</option>
                                 {% endfor %}
                             </select>
                         {% elif f.name == 'position' %}
@@ -117,9 +117,6 @@
             </div>
 
         </div>
-<!--        {{ user_form.as_p }}-->
-<!--        {{ profile_form.as_p }}-->
-<!--        {% csrf_token %}-->
-<!--        <p><input type="submit" value="Save changes"></p>-->
+
     </form>
 {% endblock %}

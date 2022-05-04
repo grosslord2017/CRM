@@ -94,8 +94,6 @@
 
                             <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
                             <select id="department" name="{{ f.name }}">
-<!--                                <option value="1">1</option>-->
-<!--                                <option value="2">2</option>-->
                                 {% for g in group %}
                                     <option value="{{ g.id }}">{{ g.name }}</option>
                                 {% endfor %}

@@ -48,14 +48,10 @@ def user_login(request):
 
 def user_registration(request):
     group = Group.objects.all()
-    print(group)
     if request.method == 'POST':
-        a = request.POST
-        print(a)
         user_form = UserRegistrationForm(request.POST)
         user_filling_form = ProfileFillingForm(request.POST)
         if user_form.is_valid() and user_filling_form.is_valid():
-            print('all_valid')
             profile = user_filling_form.cleaned_data
             # Create a new user object but avoid saving it yet
             new_user = user_form.save(commit=False)
@@ -74,7 +70,6 @@ def user_registration(request):
             #     department=profile['department'],
             #     position=profile['position'],
             # )
-            print(profile['department'])
             Profile.objects.create(
                 user=new_user,
                 name=profile['name'],
@@ -94,7 +89,6 @@ def user_registration(request):
 
 @login_required
 def edit_profile(request):
-    department = Group.objects.all()
     if request.method == 'POST':
         user_form = UserEditForm(instance=request.user, data=request.POST)
         profile_form = ProfileFillingForm(instance=request.user.profile, data=request.POST)
@@ -108,9 +102,11 @@ def edit_profile(request):
     else:
         user_form = UserEditForm(instance=request.user)
         profile_form = ProfileFillingForm(instance=request.user.profile)
+    group = Group.objects.all()
+    print(group)
     return render(request, 'crm/edit_profile.html', {'user_form': user_form,
                                                      'profile_form': profile_form,
-                                                     'deprtment': department})
+                                                     'group': group})
 
 # пока работает нормлаьно, но возможно надо будет допиливать!!!! и добавить проверку на дату из прошлого
 @login_required
