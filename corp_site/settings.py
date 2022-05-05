@@ -15,27 +15,21 @@ from pathlib import Path
 
 
 #--------------------------------
-# try:
-#     from corp_site.local_setings import *
-# except ImportError:
-#     SECRET_KEY = 'corpsite_crm'
-#
-#     BASE_DIR = Path(__file__).resolve().parent.parent
-#
-#     DEBUG = True
-#
-#     ALLOWED_HOSTS = ['*']
-#
-#     # Database
-#     # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-#
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.sqlite3',
-#             'NAME': BASE_DIR / 'db.sqlite3',
-#         }
-#     }
-#     print('False')
+try:
+    from corp_site.local_settings import *
+except ImportError:
+    SECRET_KEY = str(os.getenv("APP_SECRET_KEY"))
+    BASE_DIR = Path(__file__).resolve().parent.parent
+    DEBUG = True
+    ALLOWED_HOSTS = ['*']
+
+    # S3
+    AWS_ACCESS_KEY_ID = str(os.getenv("AWS_ACCESS_KEY_ID"))
+    AWS_SECRET_ACCESS_KEY = str(os.getenv("AWS_SECRET_ACCESS_KEY"))
+    AWS_STORAGE_BUCKET_NAME = str(os.getenv("S3_BUCKET"))
+    S3_UPLOAD_DIRECTORY = str(os.getenv("S3_UPLOAD_DIRECTORY"))
+
+
 #--------------------------------
 
 
@@ -43,12 +37,11 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-eu$=-%joa00uc_lbadv&j7kfzbdjq6=t6zy#*l$hrp@je&zm5w'
+# SECRET_KEY = 'django-insecure-eu$=-%joa00uc_lbadv&j7kfzbdjq6=t6zy#*l$hrp@je&zm5w'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -150,11 +143,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# STATIC_URL = '/static/'
-# STATICFILES_DIRS = (
-#     os.path.join(BASE_DIR, 'static'),
-# )
 
 # STATIC_URL = '/static/'
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
@@ -164,25 +152,25 @@ USE_TZ = True
 #       "staticfiles",
 # ]
 
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AWS_ACCESS_KEY_ID = 'AKIATYRPCMJQNPLNOLOU'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'corpcrm'
+# AWS_ACCESS_KEY_ID = 'AKIATYRPCMJQNPLNOLOU'
+# AWS_SECRET_ACCESS_KEY = '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'
+# AWS_STORAGE_BUCKET_NAME = 'corpcrm'
 # AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
 AWS_LOCATION = 'static'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'static'),
+# ]
+
 # STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 STATIC_URL = 'https://us-east-1.console.aws.amazon.com/s3/buckets/corpcrm/'
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
