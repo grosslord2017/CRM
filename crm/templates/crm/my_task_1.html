@@ -26,30 +26,20 @@
         overflow: hidden;
     }
 
-    .completed {
-        color: green;
-    }
-
-    .not_completed {
-        color: red;
-    }
-
 {% endblock %}
 
 
 {% block body %}
-    <h2>Мной поставленные задачи</h2>
+    <h2>Мне поставленные задачи</h2>
 
     {% for task in tasks %}
-        {% if task.status_completed == True %}
-            <button class="task completed">{{ task.subject }}</button>
-        {% else %}
-            <button class="task not_completed">{{ task.subject }}</button>
-        {% endif %}
-            <div class="panel">
-                    <p><i>{{ task.final_date }}</i></p>
-                    <p>{{ task.description }}</p>
-            </div>
+
+        <button class="task">{{ task.subject }}</button>
+        <div class="panel">
+            <p><i>{{ task.final_date }}</i></p>
+            <p>{{ task.description }}</p>
+            <button><a href="{% url 'my_task_complite' pk=task.id %}">complite</a></button>
+        </div>
 
     {% endfor %}
 

@@ -1,0 +1,16 @@
+{% extends "crm/base.html" %}
+
+{% block style %}
+{% endblock %}
+
+
+{% block body %}
+    <h1>{{ task.subject }}</h1>
+    <div>
+        <p>{{ task.final_date }}</p>
+        <p>{{ task.description }}</p>
+    </div>
+    <div>
+        <button><a href="">complite</a></button>
+    </div>
+{% endblock %}

@@ -10,9 +10,8 @@ from django.contrib.auth.models import User, Group
 
 def home_crm(request):
     try:
-        active_user_id = request.user.id
-        profile_active_user = Profile.objects.get(user_id=active_user_id)
-        user_hot_task = Task.objects.filter(executor_id=active_user_id,
+        profile_active_user = Profile.objects.get(user_id=request.user.id)
+        user_hot_task = Task.objects.filter(executor_id=profile_active_user,
                                             status_completed=False).order_by('final_date')[:3]
         return render(request, 'crm/home_crm.html', {'profile': profile_active_user,
                                                      'user_hot_task': user_hot_task})
@@ -131,8 +130,8 @@ def task_create(request):
 
 @login_required
 def my_task(request):
-    user = request.user.id
-    tasks = Task.objects.filter(executor_id=user, status_completed=False).all()
+    profile = Profile.objects.get(user_id=request.user.id)
+    tasks = Task.objects.filter(executor_id=profile, status_completed=False).all()
     return render(request, 'crm/my_task.html', {'tasks': tasks})
 
 @login_required
@@ -141,24 +140,28 @@ def supervising_tasks(request):
     tasks = Task.objects.filter(task_manager_id=user).all()
     return render(request, 'crm/supervising_tasks.html', {'tasks': tasks})
 
-def my_task_complite(request, pk):
-    task = Task.objects.get(id=pk)
-    task.status_completed = True
-    task.save()
-    task_manager = Profile.objects.get(id=task.task_manager_id)
-    executor = Profile.objects.get(id=task.executor_id)
-    archive = ArchiveTask(
-        date_create=task.date_create,
-        subject=task.subject,
-        task_manager=task_manager.surname,
-        executor=executor.surname,
-        description=task.description,
-    )
-    archive.save()
+# допилисть после создания кнопки "завершить задачу"
+def my_task_inside(request, pk):
+    # task = Task.objects.get(id=pk)
+    # task.status_completed = True
+    # task.save()
+    # task_manager = Profile.objects.get(id=task.task_manager_id)
+    # executor = Profile.objects.get(id=task.executor_id)
+    # archive = ArchiveTask(
+    #     date_create=task.date_create,
+    #     subject=task.subject,
+    #     task_manager=task_manager.profile.surname,
+    #     executor=executor.surname,
+    #     description=task.description,
+    # )
+    # archive.save()
 
     # нужно подумать убирать ли сразу выполненную и перенесенную задачу из раздела Task
 
-    return HttpResponseRedirect('/my_task')
+    # return HttpResponseRedirect('/my_task')
+    # task = Task.objects.get(id=pk)
+    task = Task.objects.get(id=pk)
+    return render(request, 'crm/my_task_inside.html', {'task': task})
 
 def views_archive(request):
     if request.user.is_superuser:

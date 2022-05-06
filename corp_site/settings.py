@@ -35,7 +35,7 @@ except ImportError:
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -44,7 +44,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY = 'django-insecure-eu$=-%joa00uc_lbadv&j7kfzbdjq6=t6zy#*l$hrp@je&zm5w'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -152,12 +152,6 @@ USE_TZ = True
 #       "staticfiles",
 # ]
 
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 # AWS_ACCESS_KEY_ID = 'AKIATYRPCMJQNPLNOLOU'
 # AWS_SECRET_ACCESS_KEY = '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'
 # AWS_STORAGE_BUCKET_NAME = 'corpcrm'
@@ -174,3 +168,9 @@ AWS_LOCATION = 'static'
 # STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 STATIC_URL = 'https://us-east-1.console.aws.amazon.com/s3/buckets/corpcrm/'
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
