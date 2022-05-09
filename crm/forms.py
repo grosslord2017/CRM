@@ -36,7 +36,7 @@ class UserEditForm(forms.ModelForm):
         model = User
         fields = ('email',)
 
-class TaskForm(forms.ModelForm):
+class TaskCreateForm(forms.ModelForm):
 
     class Meta:
         model = Task

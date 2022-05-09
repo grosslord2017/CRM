@@ -20,7 +20,7 @@ try:
 except ImportError:
     SECRET_KEY = str(os.getenv("APP_SECRET_KEY"))
     BASE_DIR = Path(__file__).resolve().parent.parent
-    DEBUG = True
+    DEBUG = False
     ALLOWED_HOSTS = ['*']
 
     # S3

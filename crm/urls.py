@@ -10,7 +10,7 @@ urlpatterns = [
     path('edit/', views.edit_profile, name='edit_profile'),
     path('task/', views.task_create, name='task_form'),
     path('my_task/', views.my_task, name='my_task'),
-    path('supervising_tasks/', views.supervising_tasks, name='supervising_tasks'),
     path('my_task/<int:pk>/', views.my_task_inside, name='my_task_inside'),
+    path('supervising_tasks/', views.supervising_tasks, name='supervising_tasks'),
     path('archive/', views.views_archive, name='archive')
 ]

@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth import login, authenticate, logout
 from .models import Profile, Task, ArchiveTask
 from django.contrib.auth.decorators import login_required
-from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskForm
+from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
 
@@ -112,7 +112,7 @@ def edit_profile(request):
 def task_create(request):
     profile = Profile.objects.all()
     if request.method == 'POST':
-        form = TaskForm(request.POST)
+        form = TaskCreateForm(request.POST)
         if form.is_valid():
             date_form = form.cleaned_data
             task = Task.objects.create(
@@ -125,43 +125,48 @@ def task_create(request):
             task.save()
             return HttpResponseRedirect('/')
     else:
-        form = TaskForm()
+        form = TaskCreateForm()
     return render(request, 'crm/task_form.html', {'form': form, 'profile': profile})
 
 @login_required
 def my_task(request):
     profile = Profile.objects.get(user_id=request.user.id)
-    tasks = Task.objects.filter(executor_id=profile, status_completed=False).all()
+    # tasks = Task.objects.filter(executor_id=profile, status_completed=False).all()
+    tasks = Task.objects.filter(executor_id=profile).all()
+
+    # подумать как вытащить дату завершения таска и прописать ее на странице my_task
+
     return render(request, 'crm/my_task.html', {'tasks': tasks})
+
+@login_required
+def my_task_inside(request, pk):
+    task = Task.objects.get(id=pk)
+
+    # if check-box selected - task changed status_completed - True, else - do nothing.
+    if request.method =='POST':
+        print(request.POST)
+        is_completed = request.POST.get('status', False)
+        if is_completed:
+            task_manager = Profile.objects.get(id=task.executor_id)
+            task.status_completed = True
+            archive = ArchiveTask.objects.create(
+                date_create=task.date_create,
+                subject=task.subject,
+                task_manager=task.task_manager.profile.surname,
+                executor=task_manager.surname,
+                description=task.description
+            )
+            archive.save()
+            task.save()
+            return HttpResponseRedirect('/my_task/')
+
+    return render(request, 'crm/my_task_inside.html', {'task': task})
 
 @login_required
 def supervising_tasks(request):
     user = request.user.id
     tasks = Task.objects.filter(task_manager_id=user).all()
     return render(request, 'crm/supervising_tasks.html', {'tasks': tasks})
-
-# допилисть после создания кнопки "завершить задачу"
-def my_task_inside(request, pk):
-    # task = Task.objects.get(id=pk)
-    # task.status_completed = True
-    # task.save()
-    # task_manager = Profile.objects.get(id=task.task_manager_id)
-    # executor = Profile.objects.get(id=task.executor_id)
-    # archive = ArchiveTask(
-    #     date_create=task.date_create,
-    #     subject=task.subject,
-    #     task_manager=task_manager.profile.surname,
-    #     executor=executor.surname,
-    #     description=task.description,
-    # )
-    # archive.save()
-
-    # нужно подумать убирать ли сразу выполненную и перенесенную задачу из раздела Task
-
-    # return HttpResponseRedirect('/my_task')
-    # task = Task.objects.get(id=pk)
-    task = Task.objects.get(id=pk)
-    return render(request, 'crm/my_task_inside.html', {'task': task})
 
 def views_archive(request):
     if request.user.is_superuser:

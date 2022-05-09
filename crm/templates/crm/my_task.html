@@ -18,6 +18,14 @@
     .title {
         color: blue;
     }
+
+    .completed {
+        color: green;
+    }
+
+    .not_completed {
+        color: red;
+    }
 {% endblock %}
 
 
@@ -32,7 +40,7 @@
                 <th>Дата начала</th>
                 <th>Тема</th>
                 <th>Постановщик</th>
-                <th>Дата завершения</th>
+                <th>Статус выполнения</th>
             </tr>
 
             {% for task in tasks %}
@@ -42,7 +50,11 @@
                         <a href="{% url 'my_task_inside' pk=task.id %}">{{ task.subject }}</a>
                     </th>
                     <th>{{ task.task_manager.profile.surname }} {{ task.task_manager.profile.name }}</th>
-                    <th>{{ record.date_complite }}</th>
+                    {% if task.status_completed == 1 %}
+                        <th class="completed">Completed</th>
+                    {% else %}
+                        <th class="not_completed">NOT Completed</th>
+                    {% endif %}
                 </tr>
             {% endfor %}
 

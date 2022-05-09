@@ -11,6 +11,28 @@
         <p>{{ task.description }}</p>
     </div>
     <div>
-        <button><a href="">complite</a></button>
+        <form method="POST">
+        {% csrf_token %}
+            <p>
+                Completed: <input type="checkbox" id="myCheck" name="status" onclick="myFunction()">
+            </p>
+            <p id="text" style="display:none">Task completed!</p>
+            <input type="submit" value="Отправить">
+        </form>
     </div>
+
+
+
+
+    <script>
+    function myFunction() {
+        var checkBox = document.getElementById("myCheck");
+        var text = document.getElementById("text");
+        if (checkBox.checked == true){
+            text.style.display = "block";
+        } else {
+           text.style.display = "none";
+        }
+    }
+    </script>
 {% endblock %}
