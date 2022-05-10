@@ -74,7 +74,7 @@
 {% block body %}
 <!--    <h1>Create an account</h1>-->
 <!--    <p>Please, sign up using the following form:</p>-->
-    <form method="POST">
+    <form method="POST" id="registration">
         {% csrf_token %}
             <div class="container">
                 <h1>Register</h1>
@@ -100,17 +100,24 @@
                             </select>
 
                         {% elif f.name == 'position' %}
+
                             <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
                             <select id="position" name="{{ f.name }}">
-                                <option value="sysadmin">sysadmin</option>
-                                <option value="manager">manager</option>
+                                {% for p in position %}
+                                    <option value="{{ p.position }}">{{ p.position }}</option>
+                                {% endfor %}
                             </select>
+
                         {% elif f.name == 'password' %}
+
                             <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
                             <input type="password" placeholder="Enter {{ f.name }}" name="{{ f.name }}" required>
+
                         {% else %}
+
                             <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
                             <input type="text" placeholder="Enter {{ f.name }}" name="{{ f.name }}" required>
+
                         {% endif %}
 
                     {% endfor %}
@@ -125,4 +132,9 @@
         </div>
 
     </form>
+
+
+    <script>
+
+    </script>
 {% endblock %}

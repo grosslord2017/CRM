@@ -42,7 +42,10 @@ class ArchiveTask(models.Model):
     executor = models.CharField(max_length=150)
     description = models.CharField(max_length=1000)
 
+class Position(models.Model):
 
+    department_fk = models.ForeignKey(Group, on_delete=models.CASCADE)
+    position = models.CharField(max_length=150)
 
 
 

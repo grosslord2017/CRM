@@ -1,10 +1,11 @@
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth import login, authenticate, logout
-from .models import Profile, Task, ArchiveTask
+from .models import Profile, Task, ArchiveTask, Position
 from django.contrib.auth.decorators import login_required
 from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
+from django.http import JsonResponse
 
 # Create your views here.
 
@@ -47,6 +48,7 @@ def user_login(request):
 
 def user_registration(request):
     group = Group.objects.all()
+    position = Position.objects.all()
     if request.method == 'POST':
         user_form = UserRegistrationForm(request.POST)
         user_filling_form = ProfileFillingForm(request.POST)
@@ -84,7 +86,8 @@ def user_registration(request):
         user_filling_form = ProfileFillingForm()
     return render(request, 'crm/registration.html', {'user_form': user_form,
                                                      'user_filling_form': user_filling_form,
-                                                     'group': group})
+                                                     'group': group,
+                                                     'position': position})
 
 @login_required
 def edit_profile(request):

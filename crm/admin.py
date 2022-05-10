@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Profile, Task
+from .models import Profile, Task, Position
 
 
 # Register your models here.
@@ -17,8 +17,10 @@ class TaskAdmin(admin.ModelAdmin):
     search_field = ('final_date')
     list_filter = ('final_date', 'status_completed')
 
+class PositionAdmin(admin.ModelAdmin):
+
+    list_display = ('position', 'department_fk')
 
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Task, TaskAdmin)
-
-
+admin.site.register(Position, PositionAdmin)
