@@ -69,6 +69,7 @@
         margin-bottom: 16px;
         resize: vertical;
     }
+
 {% endblock %}
 
 {% block body %}
@@ -94,19 +95,16 @@
 
                             <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
                             <select id="department" name="{{ f.name }}">
+                                <option value="0">Выберите отдел</option>
                                 {% for g in group %}
                                     <option value="{{ g.id }}">{{ g.name }}</option>
                                 {% endfor %}
                             </select>
 
                         {% elif f.name == 'position' %}
-
-                            <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
-                            <select id="position" name="{{ f.name }}">
-                                {% for p in position %}
-                                    <option value="{{ p.position }}">{{ p.position }}</option>
-                                {% endfor %}
-                            </select>
+                                <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
+                                <select id="position" name="{{ f.name }}">
+                                </select>
 
                         {% elif f.name == 'password' %}
 
@@ -135,6 +133,39 @@
 
 
     <script>
+        var positionURL = "{% url 'choice_position' %}";
+        csrfToken = '{{ csrf_token }}';
 
+        document.getElementById("department").onchange = function() {
+            var depId = document.getElementById('department').value;
+
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open('POST', positionURL);
+            xmlhttp.setRequestHeader('Content-Type', 'application/json');
+            xmlhttp.setRequestHeader('X-CSRFToken', csrfToken);
+
+            xmlhttp.send(JSON.stringify({depId: depId}));
+
+            xmlhttp.onreadystatechange = function () {
+
+                if (this.readyState === 4 && this.status === 200) {
+                    var response = JSON.parse(this.responseText);
+                    var allPosition = response['pos']
+                    console.log(allPosition)
+
+                    // clean option list //
+                    var pos = document.getElementById('position');
+                    while (pos.options.length) {
+                        pos.options[0] = null;
+                    }
+
+                    for (i = 0; i < allPosition.length; i++) {
+                        position.append(new Option(allPosition[i], allPosition[i]))
+                    }
+                }
+            }
+
+        }
     </script>
+
 {% endblock %}

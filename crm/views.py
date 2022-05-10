@@ -5,7 +5,8 @@ from django.contrib.auth.decorators import login_required
 from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm
 from django.contrib import messages
 from django.contrib.auth.models import User, Group
-from django.http import JsonResponse
+from django.http.response import JsonResponse
+import json
 
 # Create your views here.
 
@@ -104,11 +105,11 @@ def edit_profile(request):
     else:
         user_form = UserEditForm(instance=request.user)
         profile_form = ProfileFillingForm(instance=request.user.profile)
-    group = Group.objects.all()
-    print(group)
+    department = Group.objects.all()
+
     return render(request, 'crm/edit_profile.html', {'user_form': user_form,
                                                      'profile_form': profile_form,
-                                                     'group': group})
+                                                     'depart': department})
 
 # пока работает нормлаьно, но возможно надо будет допиливать!!!! и добавить проверку на дату из прошлого
 @login_required
@@ -177,3 +178,13 @@ def views_archive(request):
         return render(request, 'crm/archive.html', {'archive': archive})
     else:
         raise Http404
+
+def choice_position(request):
+    department_id = json.loads(request.body).get('depId')
+    if department_id:
+        position = Position.objects.filter(department_fk=department_id)
+        pos_list = []
+        for p in position:
+            pos_list.append(p.name)
+
+    return JsonResponse({'pos': pos_list})

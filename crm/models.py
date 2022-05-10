@@ -45,7 +45,7 @@ class ArchiveTask(models.Model):
 class Position(models.Model):
 
     department_fk = models.ForeignKey(Group, on_delete=models.CASCADE)
-    position = models.CharField(max_length=150)
+    name = models.CharField(max_length=150)
 
 
 

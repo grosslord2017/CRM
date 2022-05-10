@@ -91,7 +91,7 @@
                         {% if f.name == 'department' %}
                             <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
                             <select id="department" name="{{ f.name }}">
-                                {% for d in group %}
+                                {% for d in depart %}
                                     <option value="{{ d.id }}">{{ d }}</option>
                                 {% endfor %}
                             </select>

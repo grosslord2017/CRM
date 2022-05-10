@@ -19,7 +19,7 @@ class TaskAdmin(admin.ModelAdmin):
 
 class PositionAdmin(admin.ModelAdmin):
 
-    list_display = ('position', 'department_fk')
+    list_display = ('name', 'department_fk')
 
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Task, TaskAdmin)
