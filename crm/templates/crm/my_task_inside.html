@@ -1,6 +1,56 @@
 {% extends "crm/base.html" %}
 
 {% block style %}
+<!--    style for comments  -->
+    body {
+        margin: 0 auto;
+        max-width: 800px;
+        padding: 0 20px;
+    }
+
+    .container {
+        border: 2px solid #dedede;
+        background-color: #f1f1f1;
+        border-radius: 5px;
+        padding: 10px;
+        margin: 10px 0;
+    }
+
+    .darker {
+        border-color: #ccc;
+        background-color: #ddd;
+    }
+
+    .container::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+
+    .container img {
+        float: left;
+        max-width: 60px;
+        width: 100%;
+        margin-right: 20px;
+        border-radius: 50%;
+    }
+
+    .container img.right {
+        float: right;
+        margin-left: 20px;
+        margin-right:0;
+    }
+
+    .time-right {
+        float: right;
+        color: #aaa;
+    }
+
+    .time-left {
+        float: left;
+        color: #999;
+    }
+
 {% endblock %}
 
 
@@ -10,29 +60,63 @@
         <p>{{ task.final_date }}</p>
         <p>{{ task.description }}</p>
     </div>
+
     <div>
         <form method="POST">
         {% csrf_token %}
             <p>
-                Completed: <input type="checkbox" id="myCheck" name="status" onclick="myFunction()">
+                Completed: <input type="checkbox" id="myCheck" name="status" onclick="Go()" >
             </p>
-            <p id="text" style="display:none">Task completed!</p>
-            <input type="submit" value="Завершить">
+            <input disabled name="complete" type="submit" value="Завершить">
         </form>
     </div>
 
+<!--    create Comment    -->
+    <div name="create_comment">
+        <form method="POST">
+            {% csrf_token %}
+            <p>hi</p>
+        </form>
+    </div>
+
+<!--   output Comments    -->
+<!--    <h2>Chat Messages</h2>-->
+
+<!--    <div class="container">-->
+<!--        <img src="/w3images/bandmember.jpg" alt="Avatar" style="width:100%;">-->
+<!--        <p>Hello. How are you today?</p>-->
+<!--        <span class="time-right">11:00</span>-->
+<!--    </div>-->
+
+<!--    <div class="container darker">-->
+<!--        <img src="/w3images/avatar_g2.jpg" alt="Avatar" class="right" style="width:100%;">-->
+<!--        <p>Hey! I'm fine. Thanks for asking!</p>-->
+<!--        <span class="time-left">11:01</span>-->
+<!--    </div>-->
+
+<!--    <div class="container">-->
+<!--        <img src="/w3images/bandmember.jpg" alt="Avatar" style="width:100%;">-->
+<!--        <p>Sweet! So, what do you wanna do today?</p>-->
+<!--        <span class="time-right">11:02</span>-->
+<!--    </div>-->
+
+<!--    <div class="container darker">-->
+<!--        <img src="/w3images/avatar_g2.jpg" alt="Avatar" style="width:100%;">-->
+<!--        <p>Nah, I dunno. Play soccer.. or learn more coding perhaps?</p>-->
+<!--        <span class="time-left">11:05</span>-->
+<!--    </div>-->
 
 
 
     <script>
-    function myFunction() {
-        var checkBox = document.getElementById("myCheck");
-        var text = document.getElementById("text");
-        if (checkBox.checked == true){
-            text.style.display = "block";
-        } else {
-           text.style.display = "none";
+        function Go() {
+            var complete = document.getElementsByName('complete')[0];
+            if (document.getElementById('myCheck').checked) {
+                console.log(complete)
+                complete.disabled = '';
+            } else {
+                complete.disabled = 'disabled';
+            }
         }
-    }
     </script>
 {% endblock %}

@@ -4,9 +4,10 @@ from .models import Profile, Task, ArchiveTask, Position
 from django.contrib.auth.decorators import login_required
 from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm
 from django.contrib import messages
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
 from django.http.response import JsonResponse
 import json
+from django.db.models import Q
 
 # Create your views here.
 
@@ -63,15 +64,6 @@ def user_registration(request):
             new_user.save()
             # create empty profile for new user (user=new_user) - привязка по id к созданому юзеру
             # Create the user profile
-            # Profile.objects.create(
-            #     user=new_user,
-            #     name=profile['name'],
-            #     surname=profile['surname'],
-            #     patronymic=profile['patronymic'],
-            #     telephone=profile['telephone'],
-            #     department=profile['department'],
-            #     position=profile['position'],
-            # )
             Profile.objects.create(
                 user=new_user,
                 name=profile['name'],
@@ -79,7 +71,7 @@ def user_registration(request):
                 patronymic=profile['patronymic'],
                 telephone=profile['telephone'],
                 department_id=profile['department'].id,
-                position=profile['position'],
+                position_id=profile['position'].id,
             )
             return render(request, 'crm/registration_done.html', {'new_user': new_user})
     else:
@@ -114,7 +106,8 @@ def edit_profile(request):
 # пока работает нормлаьно, но возможно надо будет допиливать!!!! и добавить проверку на дату из прошлого
 @login_required
 def task_create(request):
-    profile = Profile.objects.all()
+    profile = Profile.objects.filter(~Q(user_id=request.user.id))
+    print(profile)
     if request.method == 'POST':
         form = TaskCreateForm(request.POST)
         if form.is_valid():
@@ -184,7 +177,9 @@ def choice_position(request):
     if department_id:
         position = Position.objects.filter(department_fk=department_id)
         pos_list = []
+        # print(position)
         for p in position:
-            pos_list.append(p.name)
+            pos_l = [p.name, p.id]
+            pos_list.append(pos_l)
 
-    return JsonResponse({'pos': pos_list})
+        return JsonResponse({'pos': pos_list})

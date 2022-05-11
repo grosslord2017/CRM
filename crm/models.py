@@ -6,6 +6,12 @@ from django.contrib.auth.models import User, Group
 
 
 # Create your models here.
+
+class Position(models.Model):
+
+    department_fk = models.ForeignKey(Group, on_delete=models.CASCADE)
+    name = models.CharField(max_length=150)
+
 class Profile(models.Model):
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=True)
@@ -15,7 +21,8 @@ class Profile(models.Model):
     telephone = models.CharField(max_length=20, default='')
     # department = models.CharField(max_length=200, default='')
     department = models.ForeignKey(Group, on_delete=models.DO_NOTHING)
-    position = models.CharField(max_length=200, default='')
+    # position = models.CharField(max_length=200, default='')
+    position = models.ForeignKey(Position, on_delete=models.DO_NOTHING)
 
 class Task(models.Model):
 
@@ -27,9 +34,10 @@ class Task(models.Model):
     task_manager = models.ForeignKey(User, on_delete=models.CASCADE)
     executor = models.ForeignKey(Profile, on_delete=models.CASCADE, default=None)
 
-class Coment(models.Model):
+class Comment(models.Model):
 
     task_fk = models.ForeignKey(Task, on_delete=models.CASCADE, default=None, null=True)
+    author = models.ForeignKey(Profile, on_delete=models.DO_NOTHING)
     text = models.CharField(max_length=5000)
     date = models.DateTimeField(default=timezone.now)
 
@@ -41,12 +49,4 @@ class ArchiveTask(models.Model):
     task_manager = models.CharField(max_length=150)
     executor = models.CharField(max_length=150)
     description = models.CharField(max_length=1000)
-
-class Position(models.Model):
-
-    department_fk = models.ForeignKey(Group, on_delete=models.CASCADE)
-    name = models.CharField(max_length=150)
-
-
-
 

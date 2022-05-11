@@ -1,5 +1,5 @@
 from django import forms
-from .models import Profile, Task
+from .models import Profile, Task, Comment
 from django.contrib.auth.models import User
 from django.forms.widgets import DateInput, Textarea, SelectDateWidget
 
@@ -45,3 +45,9 @@ class TaskCreateForm(forms.ModelForm):
         #     'final_date': SelectDateWidget(),
         #     'description': Textarea(attrs={'cols': 80, 'rows': 20}),
         # }
+
+class CommentCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = Comment
+        fields = ('text',)
