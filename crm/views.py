@@ -1,8 +1,8 @@
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth import login, authenticate, logout
-from .models import Profile, Task, ArchiveTask, Position
+from .models import Profile, Task, ArchiveTask, Position, Comment
 from django.contrib.auth.decorators import login_required
-from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm
+from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm, CommentCreateForm
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.http.response import JsonResponse
@@ -138,10 +138,11 @@ def my_task(request):
 @login_required
 def my_task_inside(request, pk):
     task = Task.objects.get(id=pk)
+    comment_form = CommentCreateForm()
 
-    # if check-box selected - task changed status_completed - True, else - do nothing.
     if request.method =='POST':
-        print(request.POST)
+        # block complete task
+        # if check-box selected - task changed status_completed - True, else - do nothing.
         is_completed = request.POST.get('status', False)
         if is_completed:
             task_manager = Profile.objects.get(id=task.executor_id)
@@ -157,13 +158,72 @@ def my_task_inside(request, pk):
             task.save()
             return HttpResponseRedirect('/my_task/')
 
-    return render(request, 'crm/my_task_inside.html', {'task': task})
+        # block create comment
+        comment_form = CommentCreateForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.cleaned_data
+            create_comment = Comment.objects.create(
+                task_fk=task,
+                author=Profile.objects.get(user_id=request.user.id),
+                text=comment['text'],
+            )
+            create_comment.save()
+            return HttpResponseRedirect(f'/my_task/{pk}')
+
+    # output comments
+    comments = Comment.objects.filter(task_fk_id=pk).order_by('date')[::-1]
+
+    return render(request, 'crm/my_task_inside.html', {'task': task,
+                                                       'comment_form': comment_form,
+                                                       'comments': comments})
 
 @login_required
 def supervising_tasks(request):
     user = request.user.id
     tasks = Task.objects.filter(task_manager_id=user).all()
     return render(request, 'crm/supervising_tasks.html', {'tasks': tasks})
+
+@login_required
+def supervising_task_inside(request, pk):
+    task = Task.objects.get(id=pk)
+    comment_form = CommentCreateForm()
+
+    if request.method == 'POST':
+        # block complete task
+        # if check-box selected - task changed status_completed - True, else - do nothing.
+        # is_completed = request.POST.get('status', False)
+        # if is_completed:
+        #     task_manager = Profile.objects.get(id=task.executor_id)
+        #     task.status_completed = True
+        #     archive = ArchiveTask.objects.create(
+        #         date_create=task.date_create,
+        #         subject=task.subject,
+        #         task_manager=task.task_manager.profile.surname,
+        #         executor=task_manager.surname,
+        #         description=task.description
+        #     )
+        #     archive.save()
+        #     task.save()
+        #     return HttpResponseRedirect('/my_task/')
+
+        # block create comment
+        comment_form = CommentCreateForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.cleaned_data
+            create_comment = Comment.objects.create(
+                task_fk=task,
+                author=Profile.objects.get(user_id=request.user.id),
+                text=comment['text'],
+            )
+            create_comment.save()
+            # return HttpResponseRedirect(f'/my_task/{pk}')
+
+    # output comments
+    comments = Comment.objects.filter(task_fk_id=pk).order_by('date')[::-1]
+
+    return render(request, 'crm/my_task_inside.html', {'task': task,
+                                                       'comment_form': comment_form,
+                                                       'comments': comments})
 
 def views_archive(request):
     if request.user.is_superuser:
