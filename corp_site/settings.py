@@ -26,7 +26,7 @@ except ImportError:
     # S3
     AWS_ACCESS_KEY_ID = str(os.getenv("AWS_ACCESS_KEY_ID"))
     AWS_SECRET_ACCESS_KEY = str(os.getenv("AWS_SECRET_ACCESS_KEY"))
-    AWS_STORAGE_BUCKET_NAME = str(os.getenv("S3_BUCKET"))
+    AWS_STORAGE_BUCKET_NAME = str(os.getenv("S3_BUCKET_NAME"))
     S3_UPLOAD_DIRECTORY = str(os.getenv("S3_UPLOAD_DIRECTORY"))
 
 
