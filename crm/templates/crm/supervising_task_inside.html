@@ -58,7 +58,7 @@
     <h1>{{ task.subject }}</h1>
     <div>
         <p>{{ task.final_date }}</p>
-        <p>{{ task.description }}</p>
+        <p>{{ task.description|linebreaks }}</p>
     </div>
 
     <div>
@@ -73,7 +73,7 @@
 
 <!--    create Comment    -->
     <br>
-    <div name="create_comment">
+    <div id="create_comment">
         <form method="POST">
             {% csrf_token %}
             <p>Comment:</p>
@@ -88,11 +88,10 @@
     <br>
 
     <div id="block_comment">
-        <h2>Comment</h2>
         {% for comment in comments %}
             <div class="container">
                 <h4>{{ comment.author.name }} {{ comment.author.surname }}</h4>
-                <p>{{ comment.text }}</p>
+                <p>{{ comment.text|linebreaks }}</p>
                 <span class="time-right">{{ comment.date }}</span>
             </div>
         {% endfor %}

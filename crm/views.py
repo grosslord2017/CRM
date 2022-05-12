@@ -216,7 +216,7 @@ def supervising_task_inside(request, pk):
                 text=comment['text'],
             )
             create_comment.save()
-            # return HttpResponseRedirect(f'/my_task/{pk}')
+            return HttpResponseRedirect(f'/supervising_tasks/{pk}')
 
     # output comments
     comments = Comment.objects.filter(task_fk_id=pk).order_by('date')[::-1]
