@@ -2,7 +2,8 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth import login, authenticate, logout
 from .models import Profile, Task, ArchiveTask, Position, Comment
 from django.contrib.auth.decorators import login_required
-from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm, CommentCreateForm
+from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm,\
+    CommentCreateForm
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.http.response import JsonResponse

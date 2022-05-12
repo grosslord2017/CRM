@@ -59,11 +59,11 @@
     <div id="create_comment">
         <form method="POST">
             {% csrf_token %}
-            <p>Comment:</p>
+            <p>create a comment:</p>
             {{ comment_form.text }}
-            <p>
-                <input name="sent_comment" type="submit" value="отправить коментарий">
-            </p>
+            <br>
+            <input name="sent_comment" type="submit" value="отправить коментарий">
+
         </form>
     </div>
 

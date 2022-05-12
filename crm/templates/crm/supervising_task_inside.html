@@ -78,9 +78,8 @@
             {% csrf_token %}
             <p>Comment:</p>
             {{ comment_form.text }}
-            <p>
-                <input name="sent_comment" type="submit" value="отправить коментарий">
-            </p>
+            <br>
+            <input name="sent_comment" type="submit" value="отправить коментарий">
         </form>
     </div>
 
