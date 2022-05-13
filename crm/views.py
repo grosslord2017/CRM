@@ -142,44 +142,48 @@ def my_task_inside(request, pk):
     comment_form = CommentCreateForm()
     profiles = Profile.objects.filter(~Q(user_id=request.user.id) & ~Q(id=task.task_manager.profile.id))
 
+    print(request.POST)
+
     if request.method =='POST':
-        # block complete task
-        # if check-box selected - task changed status_completed - True, else - do nothing.
-        is_completed = request.POST.get('status', False)
-        if is_completed:
-            task_manager = Profile.objects.get(id=task.executor_id)
-            task.status_completed = True
-            archive = ArchiveTask.objects.create(
-                date_create=task.date_create,
-                subject=task.subject,
-                task_manager=task.task_manager.profile.surname,
-                executor=task_manager.surname,
-                description=task.description
-            )
-            archive.save()
-            task.save()
-            return HttpResponseRedirect('/my_task/')
+        if request.POST.get('status', False):
+            delegate = request.POST.get('profile', False)
+            # block complete task
+            if not delegate:
+                print('завершаем задачу')
+                task_manager = Profile.objects.get(id=task.executor_id)
+                task.status_completed = True
+                archive = ArchiveTask.objects.create(
+                    date_create=task.date_create,
+                    subject=task.subject,
+                    task_manager=task.task_manager.profile.surname,
+                    executor=task_manager.surname,
+                    description=task.description
+                )
+                archive.save()
+                task.save()
+                return HttpResponseRedirect('/my_task/')
+            # block delegate task
+            else:
+                print('переводим задачу')
+                task.executor_id = delegate
+                task.save()
+                return HttpResponseRedirect('/my_task/')
 
-        # block create comment
-        comment_form = CommentCreateForm(request.POST)
-        if comment_form.is_valid():
-            comment = comment_form.cleaned_data
-            create_comment = Comment.objects.create(
-                task_fk=task,
-                author=Profile.objects.get(user_id=request.user.id),
-                text=comment['text'],
-            )
-            create_comment.save()
-            return HttpResponseRedirect(f'/my_task/{pk}')
+        else:
+            print('тут')
+            # block create comment
+            comment_form = CommentCreateForm(request.POST)
+            if comment_form.is_valid():
+                comment = comment_form.cleaned_data
+                create_comment = Comment.objects.create(
+                    task_fk=task,
+                    author=Profile.objects.get(user_id=request.user.id),
+                    text=comment['text'],
+                )
+                create_comment.save()
+                return HttpResponseRedirect(f'/my_task/{pk}')
 
-        not_my_task = request.POST.get('notMyTask', False)
-        if not_my_task:
-            delegate = request.POST['profile']
-            task.executor_id = delegate
-            task.save()
-            return HttpResponseRedirect('/my_task/')
-
-    # output comments
+    # filtered and output comments
     comments = Comment.objects.filter(task_fk_id=pk).order_by('date')[::-1]
 
     return render(request, 'crm/my_task_inside.html', {'task': task,

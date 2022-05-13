@@ -49,28 +49,21 @@
         <form method="POST">
         {% csrf_token %}
             <p>
-                Completed: <input type="checkbox" id="myCheck" name="status" onclick="completeActivate()" >
+                Completed: <input type="radio" id="myCheck" name="status" onclick="delegateOff()" checked >
             </p>
-            <input disabled name="complete" type="submit" value="Завершить">
-        </form>
-    </div>
+                Delegated: <input type="radio" id="notMyTask" name="status" onclick="delegateOn()">
 
-<!--    check-box delegation    -->
-    <div>
-        <form method="POST">
-            {% csrf_token %}
+                <select disabled id="profile" name="profile">-->
+                    {% for profile in profiles %}
+                        <option value="{{ profile.id }}">{{ profile.name }} {{ profile.surname }}</option>
+                    {% endfor %}
+                </select>
             <p>
-                Not my task: <input type="checkbox" id="notMyTask" name="notMyTask" onclick="delegateActivate()">
-            </p>
-            <select disabled id="profile" name="profile">
-                {% for profile in profiles %}
-                    <option value="{{ profile.id }}">{{ profile.name }} {{ profile.surname }}</option>
-                {% endfor %}
-            </select>
-            <input disabled name="delegate" type="submit" value="Перенаправить">
+                <input name="complete" type="submit" value="OK">
+            <p>
+
         </form>
     </div>
-
 
 <!--    create Comment    -->
     <br>
@@ -81,7 +74,6 @@
             {{ comment_form.text }}
             <br>
             <input name="sent_comment" type="submit" value="отправить коментарий">
-
         </form>
     </div>
 
@@ -100,28 +92,22 @@
 
 
     <script>
-        function completeActivate() {
-            var complete = document.getElementsByName('complete')[0];
-            if (document.getElementById('myCheck').checked) {
-<!--                console.log(complete)-->
-                complete.disabled = '';
-            } else {
-                complete.disabled = 'disabled';
+
+        function delegateOn() {
+            var profile = document.getElementsByName('profile')[0];
+            if (document.getElementById('notMyTask').click) {
+                console.log(profile)
+                profile.disabled = '';
             }
         }
 
-        function delegateActivate() {
+        function delegateOff() {
             var profile = document.getElementsByName('profile')[0];
-            var delegate = document.getElementsByName('delegate')[0];
-            if (document.getElementById('notMyTask').checked) {
-<!--                console.log(delegate)-->
-<!--                console.log(profile)-->
-                profile.disabled = '';
-                delegate.disabled = '';
-            } else {
+            if (document.getElementById('myCheck').click) {
+                console.log(profile)
                 profile.disabled = 'disabled';
-                delegate.disabled = 'disabled';
             }
         }
+
     </script>
 {% endblock %}
