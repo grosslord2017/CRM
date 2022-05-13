@@ -44,15 +44,33 @@
         <p>{{ task.description|linebreaks }}</p>
     </div>
 
+<!--    check-box completed     -->
     <div>
         <form method="POST">
         {% csrf_token %}
             <p>
-                Completed: <input type="checkbox" id="myCheck" name="status" onclick="Go()" >
+                Completed: <input type="checkbox" id="myCheck" name="status" onclick="completeActivate()" >
             </p>
             <input disabled name="complete" type="submit" value="Завершить">
         </form>
     </div>
+
+<!--    check-box delegation    -->
+    <div>
+        <form method="POST">
+            {% csrf_token %}
+            <p>
+                Not my task: <input type="checkbox" id="notMyTask" name="notMyTask" onclick="delegateActivate()">
+            </p>
+            <select disabled id="profile" name="profile">
+                {% for profile in profiles %}
+                    <option value="{{ profile.id }}">{{ profile.name }} {{ profile.surname }}</option>
+                {% endfor %}
+            </select>
+            <input disabled name="delegate" type="submit" value="Перенаправить">
+        </form>
+    </div>
+
 
 <!--    create Comment    -->
     <br>
@@ -69,7 +87,6 @@
 
 <!--   output Comments    -->
     <br>
-
     <div id="block_comment">
 <!--        <h2>Comment</h2>-->
         {% for comment in comments %}
@@ -83,13 +100,27 @@
 
 
     <script>
-        function Go() {
+        function completeActivate() {
             var complete = document.getElementsByName('complete')[0];
             if (document.getElementById('myCheck').checked) {
-                console.log(complete)
+<!--                console.log(complete)-->
                 complete.disabled = '';
             } else {
                 complete.disabled = 'disabled';
+            }
+        }
+
+        function delegateActivate() {
+            var profile = document.getElementsByName('profile')[0];
+            var delegate = document.getElementsByName('delegate')[0];
+            if (document.getElementById('notMyTask').checked) {
+<!--                console.log(delegate)-->
+<!--                console.log(profile)-->
+                profile.disabled = '';
+                delegate.disabled = '';
+            } else {
+                profile.disabled = 'disabled';
+                delegate.disabled = 'disabled';
             }
         }
     </script>

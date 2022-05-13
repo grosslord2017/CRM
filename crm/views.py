@@ -140,6 +140,7 @@ def my_task(request):
 def my_task_inside(request, pk):
     task = Task.objects.get(id=pk)
     comment_form = CommentCreateForm()
+    profiles = Profile.objects.filter(~Q(user_id=request.user.id) & ~Q(id=task.task_manager.profile.id))
 
     if request.method =='POST':
         # block complete task
@@ -171,12 +172,20 @@ def my_task_inside(request, pk):
             create_comment.save()
             return HttpResponseRedirect(f'/my_task/{pk}')
 
+        not_my_task = request.POST.get('notMyTask', False)
+        if not_my_task:
+            delegate = request.POST['profile']
+            task.executor_id = delegate
+            task.save()
+            return HttpResponseRedirect('/my_task/')
+
     # output comments
     comments = Comment.objects.filter(task_fk_id=pk).order_by('date')[::-1]
 
     return render(request, 'crm/my_task_inside.html', {'task': task,
                                                        'comment_form': comment_form,
-                                                       'comments': comments})
+                                                       'comments': comments,
+                                                       'profiles': profiles})
 
 @login_required
 def supervising_tasks(request):
