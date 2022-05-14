@@ -37,10 +37,12 @@
 
 
 {% block body %}
+<!--    button return back-->
+    <button><a href="{% url 'my_tasks' %}">back to my tasks</a></button>
+
     <h1>{{ task.subject }}</h1>
     <div>
         <p>{{ task.final_date }}</p>
-<!--        <p><pre>{{ task.description }}</pre></p>-->
         <p>{{ task.description|linebreaks }}</p>
     </div>
 

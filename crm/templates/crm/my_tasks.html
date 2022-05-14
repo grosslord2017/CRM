@@ -41,6 +41,7 @@
                 <th>Тема</th>
                 <th>Постановщик</th>
                 <th>Статус выполнения</th>
+                <th>Финальная дата</th>
             </tr>
 
             {% for task in tasks %}
@@ -55,6 +56,7 @@
                     {% else %}
                         <th class="not_completed">NOT Completed</th>
                     {% endif %}
+                    <th>{{ task.final_date }}</th>
                 </tr>
             {% endfor %}
 

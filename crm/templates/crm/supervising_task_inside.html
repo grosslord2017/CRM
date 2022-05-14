@@ -55,6 +55,8 @@
 
 
 {% block body %}
+    <button><a href="{% url 'supervising_tasks' %}">back to tasks</a></button>
+
     <h1>{{ task.subject }}</h1>
     <div>
         <p>{{ task.final_date }}</p>
@@ -65,7 +67,7 @@
         <form method="POST">
         {% csrf_token %}
             <p>
-                Completed: <input type="checkbox" id="myCheck" name="status" onclick="Go()" >
+                Сonfirm сompleted: <input type="checkbox" id="myCheck" name="status" onclick="Go()" >
             </p>
             <input disabled name="complete" type="submit" value="Завершить">
         </form>

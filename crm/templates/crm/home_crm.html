@@ -41,7 +41,7 @@
             <div class="column left" style="background-color:#aaa;">
                 <h2>{{ profile.name }} {{ profile.surname }} {{ profile.patronymic }}</h2>
                 <p>
-                    <a href="{% url 'my_task' %}">Задачи поставленные мне</a>
+                    <a href="{% url 'my_tasks' %}">Задачи поставленные мне</a>
                 </p>
                 <p>
                     <a href="{% url 'supervising_tasks' %}">Мной поставленные задачи</a>
@@ -59,7 +59,7 @@
                 {% endif %}
             </div>
             <div class="column right" style="background-color:#bbb;">
-                <p>Список поставленных задач</p>
+                <p>Срочные задачи:</p>
                 {% for hot_task in user_hot_task %}
                     <div class="hot">
                         <p><strong>{{ hot_task.subject }}</strong></p>

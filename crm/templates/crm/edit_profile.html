@@ -84,8 +84,9 @@
                         <b>{{ field.label_tag }}</b>
                         {{ field.help_text }}
                         {{ field.errors }}
-                        {{ field }}
+                        <input type="email" value="{{ field.value }}" name="{{ field.name }}" required>
                     {% endfor %}
+
 
                     {% for f in profile_form %}
                         {% if f.name == 'department' %}
@@ -107,20 +108,18 @@
                             <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
                             <input type="text" value="{{ f.value }}" name="{{ f.name }}" required>
                         {% endif %}
-
                     {% endfor %}
 
                 <hr>
 
                 <button type="submit" class="editbtn">Save changes</button>
-            </div>
 
         </div>
 
     </form>
 
 
-<script>
+    <script>
         var positionURL = "{% url 'choice_position' %}";
         csrfToken = '{{ csrf_token }}';
 
@@ -155,4 +154,5 @@
 
         }
     </script>
+
 {% endblock %}

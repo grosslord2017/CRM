@@ -94,7 +94,7 @@
                         {% if f.name == 'department' %}
 
                             <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
-                            <select id="department" name="{{ f.name }}">
+                            <select id="department" name="{{ f.name }}" required>
                                 <option value="0">Выберите отдел</option>
                                 {% for g in group %}
                                     <option value="{{ g.id }}">{{ g.name }}</option>
@@ -103,7 +103,7 @@
 
                         {% elif f.name == 'position' %}
                                 <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
-                                <select id="position" name="{{ f.name }}">
+                                <select id="position" name="{{ f.name }}" required>
                                 </select>
 
                         {% elif f.name == 'password' %}

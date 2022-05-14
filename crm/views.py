@@ -16,7 +16,7 @@ def home_crm(request):
     try:
         profile_active_user = Profile.objects.get(user_id=request.user.id)
         user_hot_task = Task.objects.filter(executor_id=profile_active_user,
-                                            status_completed=False).order_by('final_date')[:3]
+                                            status_completed=False).order_by('final_date')[:5]
         return render(request, 'crm/home_crm.html', {'profile': profile_active_user,
                                                      'user_hot_task': user_hot_task})
     except:
@@ -93,6 +93,19 @@ def edit_profile(request):
             profile_form.save()
             messages.success(request, 'Profile updated successfully')
             return HttpResponseRedirect('/')
+        elif user_form.is_valid() and not profile_form.is_valid():
+            user_form.save()
+            if request.POST['department'] == '0':
+                profile = Profile.objects.get(user_id=request.user.id)
+                profile.name = request.POST['name']
+                profile.surname = request.POST['surname']
+                profile.patronymic = request.POST['patronymic']
+                profile.telephone = request.POST['telephone']
+                profile.department = profile.department
+                profile.position = profile.position
+                profile.save()
+                messages.success(request, 'Profile updated successfully')
+                return HttpResponseRedirect('/')
         else:
             messages.error(request, 'Error updating your profile')
     else:
@@ -108,7 +121,6 @@ def edit_profile(request):
 @login_required
 def task_create(request):
     profile = Profile.objects.filter(~Q(user_id=request.user.id))
-    print(profile)
     if request.method == 'POST':
         form = TaskCreateForm(request.POST)
         if form.is_valid():
@@ -134,7 +146,7 @@ def my_task(request):
 
     # подумать как вытащить дату завершения таска и прописать ее на странице my_task
 
-    return render(request, 'crm/my_task.html', {'tasks': tasks})
+    return render(request, 'crm/my_tasks.html', {'tasks': tasks})
 
 @login_required
 def my_task_inside(request, pk):
@@ -142,35 +154,21 @@ def my_task_inside(request, pk):
     comment_form = CommentCreateForm()
     profiles = Profile.objects.filter(~Q(user_id=request.user.id) & ~Q(id=task.task_manager.profile.id))
 
-    print(request.POST)
-
     if request.method =='POST':
         if request.POST.get('status', False):
             delegate = request.POST.get('profile', False)
             # block complete task
             if not delegate:
-                print('завершаем задачу')
-                task_manager = Profile.objects.get(id=task.executor_id)
                 task.status_completed = True
-                archive = ArchiveTask.objects.create(
-                    date_create=task.date_create,
-                    subject=task.subject,
-                    task_manager=task.task_manager.profile.surname,
-                    executor=task_manager.surname,
-                    description=task.description
-                )
-                archive.save()
                 task.save()
-                return HttpResponseRedirect('/my_task/')
+                return HttpResponseRedirect('/my_tasks/')
             # block delegate task
             else:
-                print('переводим задачу')
                 task.executor_id = delegate
                 task.save()
-                return HttpResponseRedirect('/my_task/')
+                return HttpResponseRedirect('/my_tasks/')
 
         else:
-            print('тут')
             # block create comment
             comment_form = CommentCreateForm(request.POST)
             if comment_form.is_valid():
@@ -181,7 +179,7 @@ def my_task_inside(request, pk):
                     text=comment['text'],
                 )
                 create_comment.save()
-                return HttpResponseRedirect(f'/my_task/{pk}')
+                return HttpResponseRedirect(f'/my_tasks/{pk}')
 
     # filtered and output comments
     comments = Comment.objects.filter(task_fk_id=pk).order_by('date')[::-1]
@@ -201,7 +199,6 @@ def supervising_tasks(request):
 def supervising_task_inside(request, pk):
     task = Task.objects.get(id=pk)
     comment_form = CommentCreateForm()
-
     if request.method == 'POST':
         # block complete task
         # if check-box selected - task changed status_completed - True, else - do nothing.
@@ -221,6 +218,19 @@ def supervising_task_inside(request, pk):
         #     return HttpResponseRedirect('/my_task/')
 
         # block create comment
+        if request.POST.get('status', False):
+            task_manager = Profile.objects.get(id=task.executor_id)
+            archive = ArchiveTask.objects.create(
+                date_create=task.date_create,
+                subject=task.subject,
+                task_manager=task.task_manager.profile.surname,
+                executor=task_manager.surname,
+                description=task.description
+            )
+            archive.save()
+            task.delete()
+            return HttpResponseRedirect(f'/supervising_tasks/')
+
         comment_form = CommentCreateForm(request.POST)
         if comment_form.is_valid():
             comment = comment_form.cleaned_data
@@ -235,7 +245,7 @@ def supervising_task_inside(request, pk):
     # output comments
     comments = Comment.objects.filter(task_fk_id=pk).order_by('date')[::-1]
 
-    return render(request, 'crm/my_task_inside.html', {'task': task,
+    return render(request, 'crm/supervising_task_inside.html', {'task': task,
                                                        'comment_form': comment_form,
                                                        'comments': comments})
 
