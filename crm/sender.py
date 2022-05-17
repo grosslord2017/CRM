@@ -31,3 +31,4 @@ class MailSender(object):
 def send_mail(to, subject, body):
     create = MailSender(to, subject, body)
     create.connect_server()
+

@@ -2,7 +2,7 @@ import json
 from .sender import send_mail
 from django.db.models import Q
 from django.contrib import messages
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User
 from django.http.response import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
@@ -139,7 +139,10 @@ def task_create(request):
             to = Profile.objects.get(id=date_form['executor'].id).user.email
             subject = date_form['subject']
             body = f"ОТ: {request.user.profile.surname} {request.user.profile.name} \n\n {date_form['description']}"
-            send_mail(to, subject, body)
+            try:
+                send_mail(to, subject, body)
+            except:
+                messages.error(request, 'Email was not sent')
 
             return HttpResponseRedirect('/')
     else:
@@ -169,11 +172,29 @@ def my_task_inside(request, pk):
             if not delegate:
                 task.status_completed = True
                 task.save()
+
+                # block answer task completion
+                to = User.objects.get(id=task.task_manager.id).email
+                subject = 'Re:' + task.subject
+                body = f"Пользователь {request.user.profile.surname} {request.user.profile.name} Завершил задачу!"
+                try:
+                    send_mail(to, subject, body)
+                except:
+                    messages.error(request, 'Email was not sent')
                 return HttpResponseRedirect('/my_tasks/')
+
             # block delegate task
             else:
                 task.executor_id = delegate
                 task.save()
+                to = Profile.objects.get(id=task.executor_id).user.email
+                subject = task.subject
+                body = f"Пользователь {request.user.profile.surname} {request.user.profile.name} " \
+                       f"перенаправил на Вас задачу {task.subject} \n {task.description}"
+                try:
+                    send_mail(to, subject, body)
+                except:
+                    messages.error(request, 'Email was not sent')
                 return HttpResponseRedirect('/my_tasks/')
 
         else:
