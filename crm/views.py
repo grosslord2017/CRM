@@ -1,14 +1,16 @@
-from django.shortcuts import render, HttpResponseRedirect, HttpResponse, Http404
-from django.contrib.auth import login, authenticate, logout
-from .models import Profile, Task, ArchiveTask, Position, Comment
-from django.contrib.auth.decorators import login_required
-from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm,\
-    CommentCreateForm
+import json
+from .sender import send_mail
+from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.http.response import JsonResponse
-import json
-from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, authenticate, logout
+from .models import Profile, Task, ArchiveTask, Position, Comment
+from django.shortcuts import render, HttpResponseRedirect, HttpResponse, Http404
+from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm,\
+    CommentCreateForm
+
 
 # Create your views here.
 
@@ -125,14 +127,20 @@ def task_create(request):
         form = TaskCreateForm(request.POST)
         if form.is_valid():
             date_form = form.cleaned_data
-            task = Task.objects.create(
+            Task.objects.create(
                 subject=date_form['subject'],
                 final_date=date_form['final_date'],
                 description=date_form['description'],
                 task_manager_id=request.user.id,
                 executor_id=date_form['executor'].id,
             )
-            task.save()
+
+            # create and send notification
+            to = Profile.objects.get(id=date_form['executor'].id).user.email
+            subject = date_form['subject']
+            body = f"ОТ: {request.user.profile.surname} {request.user.profile.name} \n\n {date_form['description']}"
+            send_mail(to, subject, body)
+
             return HttpResponseRedirect('/')
     else:
         form = TaskCreateForm()
@@ -200,23 +208,6 @@ def supervising_task_inside(request, pk):
     task = Task.objects.get(id=pk)
     comment_form = CommentCreateForm()
     if request.method == 'POST':
-        # block complete task
-        # if check-box selected - task changed status_completed - True, else - do nothing.
-        # is_completed = request.POST.get('status', False)
-        # if is_completed:
-        #     task_manager = Profile.objects.get(id=task.executor_id)
-        #     task.status_completed = True
-        #     archive = ArchiveTask.objects.create(
-        #         date_create=task.date_create,
-        #         subject=task.subject,
-        #         task_manager=task.task_manager.profile.surname,
-        #         executor=task_manager.surname,
-        #         description=task.description
-        #     )
-        #     archive.save()
-        #     task.save()
-        #     return HttpResponseRedirect('/my_task/')
-
         # block create comment
         if request.POST.get('status', False):
             task_manager = Profile.objects.get(id=task.executor_id)
