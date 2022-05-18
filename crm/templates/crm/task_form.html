@@ -89,7 +89,7 @@
 
                             {% if f.name == 'final_date' %}
                                 <label for="{{ f.name }}"><i>{{ f.name }}:</i></label>
-                                <input type="date" min="2022-01-01" name="{{ f.name }}" required>
+                                <input value="{{ date }}" type="date" name="{{ f.name }}" min="{{ date }}" required>
                             {% elif f.name == 'executor' %}
                                 <label for="{{ f.name }}"><i>{{ f.name }}:</i></label>
                                 <select name="executor" required>

@@ -1,4 +1,5 @@
 import json
+from datetime import date
 from .sender import send_mail
 from django.db.models import Q
 from django.contrib import messages
@@ -18,7 +19,7 @@ def home_crm(request):
     try:
         profile_active_user = Profile.objects.get(user_id=request.user.id)
         user_hot_task = Task.objects.filter(executor_id=profile_active_user,
-                                            status_completed=False).order_by('final_date')[:5]
+                                            status_completed=False).order_by('final_date')[:3]
         return render(request, 'crm/home_crm.html', {'profile': profile_active_user,
                                                      'user_hot_task': user_hot_task})
     except:
@@ -123,6 +124,7 @@ def edit_profile(request):
 @login_required
 def task_create(request):
     profile = Profile.objects.filter(~Q(user_id=request.user.id))
+    date_today = str(date.today())
     if request.method == 'POST':
         form = TaskCreateForm(request.POST)
         if form.is_valid():
@@ -147,10 +149,10 @@ def task_create(request):
             return HttpResponseRedirect('/')
     else:
         form = TaskCreateForm()
-    return render(request, 'crm/task_form.html', {'form': form, 'profile': profile})
+    return render(request, 'crm/task_form.html', {'form': form, 'profile': profile, 'date': date_today})
 
 @login_required
-def my_task(request):
+def my_tasks(request):
     profile = Profile.objects.get(user_id=request.user.id)
     # tasks = Task.objects.filter(executor_id=profile, status_completed=False).all()
     tasks = Task.objects.filter(executor_id=profile).all()
@@ -196,7 +198,6 @@ def my_task_inside(request, pk):
                 except:
                     messages.error(request, 'Email was not sent')
                 return HttpResponseRedirect('/my_tasks/')
-
         else:
             # block create comment
             comment_form = CommentCreateForm(request.POST)
@@ -209,6 +210,9 @@ def my_task_inside(request, pk):
                 )
                 create_comment.save()
                 return HttpResponseRedirect(f'/my_tasks/{pk}')
+    else:
+        # checking the correspondence of the user and the task
+        task_and_user_verification(request, task, 'my_task_inside')
 
     # filtered and output comments
     comments = Comment.objects.filter(task_fk_id=pk).order_by('date')[::-1]
@@ -253,6 +257,9 @@ def supervising_task_inside(request, pk):
             )
             create_comment.save()
             return HttpResponseRedirect(f'/supervising_tasks/{pk}')
+    else:
+        # checking the correspondence of the user and the task
+        task_and_user_verification(request, task, 'supervising_task_inside')
 
     # output comments
     comments = Comment.objects.filter(task_fk_id=pk).order_by('date')[::-1]
@@ -279,3 +286,20 @@ def choice_position(request):
             pos_list.append(pos_l)
 
         return JsonResponse({'pos': pos_list})
+
+# проверяем есть ли запрошеная задача у текущего пользователя
+def task_and_user_verification(request, task, flag):
+    session_user_id = request.session['_auth_user_id']
+    if flag == 'my_task_inside':
+        executor = Profile.objects.get(id=task.executor_id).user.id
+        if session_user_id != str(executor):
+            raise Http404
+    elif flag == 'supervising_task_inside':
+        task_manager = task.task_manager_id
+        if session_user_id != str(task_manager):
+            raise Http404
+    else:
+        return
+
+
+

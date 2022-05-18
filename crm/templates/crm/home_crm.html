@@ -62,8 +62,8 @@
                 <p>Срочные задачи:</p>
                 {% for hot_task in user_hot_task %}
                     <div class="hot">
-                        <p><strong>{{ hot_task.subject }}</strong></p>
-                        <p>{{ hot_task.description }}</p>
+                        <p id="{{ hot_task.id}}"><strong>{{ hot_task.subject }}</strong></p>
+<!--                        <p>{{ hot_task.description }}</p>-->
                     </div>
                 {% endfor %}
             </div>
