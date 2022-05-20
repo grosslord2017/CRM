@@ -19,8 +19,8 @@ class Profile(models.Model):
     surname = models.CharField(max_length=100, default='')
     patronymic = models.CharField(max_length=50, default='')
     telephone = models.CharField(max_length=20, default='')
-    department = models.ForeignKey(Group, on_delete=models.DO_NOTHING)
-    position = models.ForeignKey(Position, on_delete=models.DO_NOTHING)
+    department = models.ForeignKey(Group, on_delete=models.DO_NOTHING, default=None, null=True)
+    position = models.ForeignKey(Position, on_delete=models.DO_NOTHING, default=None, null=True)
 
 class Task(models.Model):
 

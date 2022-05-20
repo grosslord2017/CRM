@@ -10,7 +10,7 @@ from django.contrib.auth import login, authenticate, logout
 from .models import Profile, Task, ArchiveTask, Position, Comment
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse, Http404
 from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm,\
-    CommentCreateForm
+    CommentCreateForm, DepartmentCreateForm, PositionCreateForm
 
 
 # Create your views here.
@@ -19,7 +19,7 @@ def home_crm(request):
     try:
         profile_active_user = Profile.objects.get(user_id=request.user.id)
         user_hot_task = Task.objects.filter(executor_id=profile_active_user,
-                                            status_completed=False).order_by('final_date')[:3]
+                                            status_completed=False).order_by('final_date')[:5]
         return render(request, 'crm/home_crm.html', {'profile': profile_active_user,
                                                      'user_hot_task': user_hot_task})
     except:
@@ -90,7 +90,23 @@ def user_registration(request):
 def edit_profile(request):
     if request.method == 'POST':
         user_form = UserEditForm(instance=request.user, data=request.POST)
-        profile_form = ProfileFillingForm(instance=request.user.profile, data=request.POST)
+        try:
+            profile = request.user.profile
+        except:
+            Profile.objects.create(
+                    name=request.POST['name'],
+                    surname=request.POST['surname'],
+                    patronymic=request.POST['patronymic'],
+                    telephone=request.POST['telephone'],
+                    department_id=None,
+                    position_id=None,
+                    user=request.user
+                )
+            user_form.save()
+            messages.success(request, 'Profile updated successfully')
+            return HttpResponseRedirect('/')
+
+        profile_form = ProfileFillingForm(instance=profile, data=request.POST)
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
@@ -113,7 +129,12 @@ def edit_profile(request):
             messages.error(request, 'Error updating your profile')
     else:
         user_form = UserEditForm(instance=request.user)
-        profile_form = ProfileFillingForm(instance=request.user.profile)
+        try:
+            profile = request.user.profile
+            profile_form = ProfileFillingForm(instance=profile)
+        except:
+            profile_form = ProfileFillingForm()
+
     department = Group.objects.all()
 
     return render(request, 'crm/edit_profile.html', {'user_form': user_form,
@@ -123,7 +144,7 @@ def edit_profile(request):
 # пока работает нормлаьно, но возможно надо будет допиливать!!!! и добавить проверку на дату из прошлого
 @login_required
 def task_create(request):
-    profile = Profile.objects.filter(~Q(user_id=request.user.id))
+    group = Group.objects.all()
     date_today = str(date.today())
     if request.method == 'POST':
         form = TaskCreateForm(request.POST)
@@ -149,7 +170,7 @@ def task_create(request):
             return HttpResponseRedirect('/')
     else:
         form = TaskCreateForm()
-    return render(request, 'crm/task_form.html', {'form': form, 'profile': profile, 'date': date_today})
+    return render(request, 'crm/task_form.html', {'form': form, 'date': date_today, 'group': group})
 
 @login_required
 def my_tasks(request):
@@ -165,11 +186,11 @@ def my_tasks(request):
 def my_task_inside(request, pk):
     task = Task.objects.get(id=pk)
     comment_form = CommentCreateForm()
-    profiles = Profile.objects.filter(~Q(user_id=request.user.id) & ~Q(id=task.task_manager.profile.id))
+    group = Group.objects.all()
 
     if request.method =='POST':
         if request.POST.get('status', False):
-            delegate = request.POST.get('profile', False)
+            delegate = request.POST.get('position', False)
             # block complete task
             if not delegate:
                 task.status_completed = True
@@ -197,7 +218,7 @@ def my_task_inside(request, pk):
                     send_mail(to, subject, body)
                 except:
                     messages.error(request, 'Email was not sent')
-                return HttpResponseRedirect('/my_tasks/')
+            return HttpResponseRedirect('/my_tasks/')
         else:
             # block create comment
             comment_form = CommentCreateForm(request.POST)
@@ -209,7 +230,7 @@ def my_task_inside(request, pk):
                     text=comment['text'],
                 )
                 create_comment.save()
-                return HttpResponseRedirect(f'/my_tasks/{pk}')
+                return HttpResponseRedirect(f'/my_task/{pk}')
     else:
         # checking the correspondence of the user and the task
         task_and_user_verification(request, task, 'my_task_inside')
@@ -220,7 +241,7 @@ def my_task_inside(request, pk):
     return render(request, 'crm/my_task_inside.html', {'task': task,
                                                        'comment_form': comment_form,
                                                        'comments': comments,
-                                                       'profiles': profiles})
+                                                       'group': group})
 
 @login_required
 def supervising_tasks(request):
@@ -278,14 +299,38 @@ def views_archive(request):
 def choice_position(request):
     department_id = json.loads(request.body).get('depId')
     if department_id:
-        position = Position.objects.filter(department_fk=department_id)
+        positions = Position.objects.filter(department_fk=department_id)
         pos_list = []
-        # print(position)
-        for p in position:
-            pos_l = [p.name, p.id]
+        for position in positions:
+            pos_l = [position.name, position.id]
             pos_list.append(pos_l)
 
-        return JsonResponse({'pos': pos_list})
+        return JsonResponse({'pos_l': pos_list})
+
+def choice_profile(request):
+    department_id = json.loads(request.body).get('depId')
+    task_id = json.loads(request.body).get('taskId')
+    positions = Position.objects.filter(department_fk=department_id)
+    pos_profile = []
+
+    if task_id:
+        task = Task.objects.get(id=task_id)
+        for position in positions:
+            pos_prof = Profile.objects.filter(~Q(user_id=request.user.id) & ~Q(id=task.task_manager.profile.id),
+                                              position=position.id)
+            if pos_prof:
+                for pos_p in pos_prof:
+                    prof = [pos_p.name, pos_p.surname, position.name, pos_p.id]
+                    pos_profile.append(prof)
+    else:
+        for position in positions:
+            pos_prof = Profile.objects.filter(~Q(user_id=request.user.id), position=position.id)
+            if pos_prof:
+                for pos_p in pos_prof:
+                    prof = [pos_p.name, pos_p.surname, position.name, pos_p.id]
+                    pos_profile.append(prof)
+
+    return JsonResponse({'pos_p': pos_profile})
 
 # проверяем есть ли запрошеная задача у текущего пользователя
 def task_and_user_verification(request, task, flag):
@@ -301,5 +346,36 @@ def task_and_user_verification(request, task, flag):
     else:
         return
 
+def create_workplace(request):
+    dep = Group.objects.all()
+    if request.method == 'POST':
+        form_dep = DepartmentCreateForm(request.POST)
+        form_pos = PositionCreateForm(request.POST)
+        if request.POST.get('department', False):
+            try:
+                department = Group.objects.get(name=request.POST['department'])
+            except:
+                Group.objects.create(
+                    name=request.POST['department']
+                )
+                messages.success(request, 'Department create successfully')
+                return HttpResponseRedirect('/create_workplace/')
+        elif request.POST.get('position', False):
+            try:
+                position = Position.objects.get(name=request.POST['position'])
+            except:
+                Position.objects.create(
+                    department_fk=Group.objects.get(id=int(request.POST['dep_id'])),
+                    name=request.POST['position']
+                    )
+                messages.success(request, 'Position create successfully')
+                return HttpResponseRedirect('/create_workplace/')
+
+    else:
+        form_dep = DepartmentCreateForm()
+        form_pos = PositionCreateForm()
+    return render(request, 'crm/create_workplace.html', {'form_dep': form_dep,
+                                                         'form_pos': form_pos,
+                                                         'dep': dep})
 
 

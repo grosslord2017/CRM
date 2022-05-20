@@ -1,6 +1,6 @@
 from django import forms
-from .models import Profile, Task, Comment
-from django.contrib.auth.models import User
+from .models import Profile, Task, Comment, Position
+from django.contrib.auth.models import User, Group
 from django.forms.widgets import DateInput, Textarea, SelectDateWidget
 
 
@@ -54,3 +54,15 @@ class CommentCreateForm(forms.ModelForm):
         widgets = {
             'text': Textarea(attrs={'cols': 80, 'rows': 5})
         }
+
+class DepartmentCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = Group
+        fields = ('name',)
+
+class PositionCreateForm(forms.ModelForm):
+
+    class Meta:
+        model = Position
+        fields = ('department_fk', 'name')

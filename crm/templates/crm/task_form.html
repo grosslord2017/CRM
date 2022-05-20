@@ -84,31 +84,75 @@
         <form method="POST">
             {% csrf_token %}
             <div class="container">
-                    <hr>
-                        {% for f in form %}
+                <hr>
+                    {% for f in form %}
 
-                            {% if f.name == 'final_date' %}
-                                <label for="{{ f.name }}"><i>{{ f.name }}:</i></label>
-                                <input value="{{ date }}" type="date" name="{{ f.name }}" min="{{ date }}" required>
-                            {% elif f.name == 'executor' %}
-                                <label for="{{ f.name }}"><i>{{ f.name }}:</i></label>
-                                <select name="executor" required>
-                                    {% for prof in profile %}
-                                        <option value="{{ prof.id }}">{{ prof.name}} {{ prof.surname }}</option>
-                                    {% endfor %}
+                        {% if f.name == 'final_date' %}
+                            <label for="{{ f.name }}"><i>{{ f.name }}:</i></label>
+                            <input value="{{ date }}" type="date" name="{{ f.name }}" min="{{ date }}" required>
+                        {% elif f.name == 'executor' %}
+
+                            <label><i>department:</i></label>
+                            <select id="department" name="department" required>
+                                <option value="0">Выберите отдел</option>
+                                {% for g in group %}
+                                    <option value="{{ g.id }}">{{ g.name }}</option>
+                                {% endfor %}
+                            </select>
+
+                             <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
+                                <select id="position" name="{{ f.name }}" required>
                                 </select>
-                            {% elif f.name == 'description' %}
-                                <label for="{{ f.name }}"><i>{{ f.name }}:</i></label>
-                                <textarea name="{{ f.name }}" required></textarea>
-                            {% else %}
-                                 <label for="{{ f.name }}"><i>{{ f.name }}:</i></label>
-                                <input type="text" name="{{ f.name }}" required>
-                            {% endif %}
 
-                        {% endfor %}
+                        {% elif f.name == 'description' %}
+                            <label for="{{ f.name }}"><i>{{ f.name }}:</i></label>
+                            <textarea name="{{ f.name }}" required></textarea>
+                        {% else %}
+                            <label for="{{ f.name }}"><i>{{ f.name }}:</i></label>
+                            <input type="text" name="{{ f.name }}" required>
+                        {% endif %}
 
-                    <p><button type="submit" class="set">set the task</button></p>
-                </div>
+                    {% endfor %}
+
+                <p><button type="submit" class="set">set the task</button></p>
+            </div>
         </form>
+
+
+    <script>
+        var positionURL = "{% url 'choice-profile' %}";
+        csrfToken = '{{ csrf_token }}';
+
+        document.getElementById("department").onchange = function() {
+            var depId = document.getElementById('department').value;
+
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open('POST', positionURL);
+            xmlhttp.setRequestHeader('Content-Type', 'application/json');
+            xmlhttp.setRequestHeader('X-CSRFToken', csrfToken);
+
+            xmlhttp.send(JSON.stringify({depId: depId}));
+
+            xmlhttp.onreadystatechange = function () {
+
+                if (this.readyState === 4 && this.status === 200) {
+                    var response = JSON.parse(this.responseText);
+                    var allPosition = response['pos_p']
+
+                    // clean option list //
+                    var pos = document.getElementById('position');
+                    while (pos.options.length) {
+                        pos.options[0] = null;
+                    }
+
+                    for (i = 0; i < allPosition.length; i++) {
+                        var user = '(' + allPosition[i][2] + ')' + ' ' + allPosition[i][1] + ' ' + allPosition[i][0]
+                        position.append(new Option(user, allPosition[i][3]))
+                    }
+                }
+            }
+
+        }
+    </script>
 
 {% endblock %}

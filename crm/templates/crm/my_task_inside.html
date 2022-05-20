@@ -48,18 +48,29 @@
 
 <!--    check-box completed     -->
     <div>
-        <form method="POST">
+        <form name="{{ task.id }}" id="taskId" method="POST">
         {% csrf_token %}
             <p>
                 Completed: <input type="radio" id="myCheck" name="status" onclick="delegateOff()" checked >
             </p>
                 Delegated: <input type="radio" id="notMyTask" name="status" onclick="delegateOn()">
 
-                <select disabled id="profile" name="profile">-->
-                    {% for profile in profiles %}
-                        <option value="{{ profile.id }}">{{ profile.name }} {{ profile.surname }}</option>
-                    {% endfor %}
-                </select>
+            <select disabled id="department" name="department">
+                <option value="0">Выберите отдел</option>
+                {% for g in group %}
+                    <option value="{{ g.id }}">{{ g.name }}</option>
+                {% endfor %}
+            </select>
+
+            <select disabled id="position" name="position">
+            </select>
+
+
+<!--                <select disabled id="profile" name="profile">&ndash;&gt;-->
+<!--                    {% for profile in profiles %}-->
+<!--                        <option value="{{ profile.id }}">{{ profile.name }} {{ profile.surname }}</option>-->
+<!--                    {% endfor %}-->
+<!--                </select>-->
             <p>
                 <input name="complete" type="submit" value="OK">
             <p>
@@ -96,17 +107,56 @@
     <script>
 
         function delegateOn() {
-            var profile = document.getElementsByName('profile')[0];
+            var dep = document.getElementsByName('department')[0];
+            var pos = document.getElementsByName('position')[0];
             if (document.getElementById('notMyTask').click) {
-                profile.disabled = '';
+                dep.disabled = '';
+                pos.disabled = '';
             }
         }
 
         function delegateOff() {
-            var profile = document.getElementsByName('profile')[0];
+            var dep = document.getElementsByName('department')[0];
+            var pos = document.getElementsByName('position')[0];
             if (document.getElementById('myCheck').click) {
-                profile.disabled = 'disabled';
+                dep.disabled = 'disabled';
+                pos.disabled = 'disabled';
             }
+        }
+
+        var positionURL = "{% url 'choice-profile' %}";
+        csrfToken = '{{ csrf_token }}';
+
+        document.getElementById("department").onchange = function() {
+            var depId = document.getElementById('department').value;
+            var taskId = document.getElementById('taskId').name;
+
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open('POST', positionURL);
+            xmlhttp.setRequestHeader('Content-Type', 'application/json');
+            xmlhttp.setRequestHeader('X-CSRFToken', csrfToken);
+
+            xmlhttp.send(JSON.stringify({depId: depId, taskId: taskId}));
+
+            xmlhttp.onreadystatechange = function () {
+
+                if (this.readyState === 4 && this.status === 200) {
+                    var response = JSON.parse(this.responseText);
+                    var allPosition = response['pos_p']
+
+                    // clean option list //
+                    var pos = document.getElementById('position');
+                    while (pos.options.length) {
+                        pos.options[0] = null;
+                    }
+
+                    for (i = 0; i < allPosition.length; i++) {
+                        var user = '(' + allPosition[i][2] + ')' + ' ' + allPosition[i][1] + ' ' + allPosition[i][0]
+                        position.append(new Option(user, allPosition[i][3]))
+                    }
+                }
+            }
+
         }
 
     </script>

@@ -7,13 +7,6 @@
         box-sizing: border-box;
     }
 
-    /* Create two unequal columns that floats next to each other */
-    .column {
-        float: left;
-        padding: 10px;
-        height: 300px; /* Should be removed. Only for demonstration */
-    }
-
     .left {
         width: 25%;
     }
@@ -22,11 +15,13 @@
         width: 75%;
     }
 
-    /* Clear floats after the columns */
-    .row:after {
-        content: "";
+    .col-container {
         display: table;
-        clear: both;
+        width: 100%;
+    }
+    .col {
+        display: table-cell;
+        padding: 16px;
     }
 
     .hot {
@@ -37,8 +32,8 @@
 {% block body %}
 
     {% if user.is_active %}
-        <div class="row">
-            <div class="column left" style="background-color:#aaa;">
+        <div class="col-container">
+            <div class="col left" style="background-color:#aaa;">
                 <h2>{{ profile.name }} {{ profile.surname }} {{ profile.patronymic }}</h2>
                 <p>
                     <a href="{% url 'my_tasks' %}">Задачи поставленные мне</a>
@@ -56,14 +51,18 @@
                     <p>
                         <a href="{% url 'archive' %}">Архив</a>
                     </p>
+                    <p>
+                        <a href="{% url 'create_workplace' %}">Управление рабочими местами</a>
+                    </p>
                 {% endif %}
             </div>
-            <div class="column right" style="background-color:#bbb;">
+            <div class="col right" style="background-color:#bbb;">
                 <p>Срочные задачи:</p>
                 {% for hot_task in user_hot_task %}
                     <div class="hot">
                         <p id="{{ hot_task.id}}"><strong>{{ hot_task.subject }}</strong></p>
-<!--                        <p>{{ hot_task.description }}</p>-->
+                        <p>{{ hot_task.description }}</p>
+                        <hr>
                     </div>
                 {% endfor %}
             </div>

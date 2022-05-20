@@ -150,8 +150,7 @@
 
                 if (this.readyState === 4 && this.status === 200) {
                     var response = JSON.parse(this.responseText);
-                    var allPosition = response['pos']
-                    console.log(allPosition)
+                    var allPosition = response['pos_l']
 
                     // clean option list //
                     var pos = document.getElementById('position');
