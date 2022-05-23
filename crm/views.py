@@ -1,6 +1,8 @@
 import json
 import django.contrib.auth.hashers as hash
 from datetime import date
+from corp_site import settings
+from random import randint
 from .sender import send_mail
 from django.db.models import Q
 from django.contrib import messages
@@ -401,32 +403,32 @@ def change_password(request):
     return render(request, 'crm/change_user_pass.html', {'form': form})
 
 def restore_account(request):
-    if request.method == 'POST':
-        if request.POST['email']:
-            form = RestoreAccountForm(request.POST)
-            print(request.POST)
 
+    print(request.POST)
+    if request.method == 'POST':
+        if request.POST.get('email', False):
+            settings.VERIFICATION_CODE = randint(10000, 99999)
+            form = RestoreAccountForm(request.POST)
 
             try:
                 user = User.objects.get(email=request.POST['email'])
+                print(user)
+                to = user.email
+                subject = 'Restore you account'
+                # body = f'Someone is trying to recover your account. If this is not you, please ignore this email. \n' \
+                #        f'Your login: {user.username} \n' \
+                #        f'code: {code}'
+                # send_mail(to, subject, body)
+                print(settings.VERIFICATION_CODE)
+                return render(request, 'crm/verification_code.html')
             except:
-                user = None
-            print(user)
-            to = user.email
-            subject = 'Restore you account'
-            body = 
-            # create and send code
-            # to = Profile.objects.get(id=date_form['executor'].id).user.email
-            # subject = date_form['subject']
-            # body = f"ОТ: {request.user.profile.surname} {request.user.profile.name} \n\n {date_form['description']}"
-            # try:
-            #     send_mail(to, subject, body)
-            # except:
-            #     messages.error(request, 'Email was not sent')
+                messages.error(request, 'there is no such mail in the database')
+        elif request.POST.get('code', False):
+            print(settings.VERIFICATION_CODE)
+            print(request.POST['code'])
+
 
     form = RestoreAccountForm()
 
     return render(request, 'crm/restore_account.html', {'form': form})
-
-
 

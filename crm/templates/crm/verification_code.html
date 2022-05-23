@@ -23,7 +23,7 @@
     }
 
     /* Full-width input fields */
-    input[type=email] {
+    input[type=text] {
         width: 100%;
         padding: 15px;
         margin: 5px 0 22px 0;
@@ -31,7 +31,7 @@
         background: #f1f1f1;
     }
 
-    input[type=email]:focus {
+    input[type=text]:focus {
         background-color: #ddd;
         outline: none;
     }
@@ -59,10 +59,8 @@
         <div class="container">
             <h3>Restore account</h3>
 
-            {% for f in form %}
-                <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
-                <input type="email" placeholder="Enter {{ f.name }}" name="{{ f.name }}" required>
-            {% endfor %}
+                <label for="code"><b>verification code:</b></label>
+                <input type="text" placeholder="Enter the code from the email" name="code" required>
 
             <button type="submit" class="btn">confirm</button>
         </div>
