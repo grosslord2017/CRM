@@ -11,7 +11,7 @@ from django.contrib.auth import login, authenticate, logout
 from .models import Profile, Task, ArchiveTask, Position, Comment
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse, Http404
 from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm,\
-    CommentCreateForm, DepartmentCreateForm, PositionCreateForm, ChangePasswordForm
+    CommentCreateForm, DepartmentCreateForm, PositionCreateForm, ChangePasswordForm, RestoreAccountForm
 
 
 # Create your views here.
@@ -399,6 +399,34 @@ def change_password(request):
         form = ChangePasswordForm()
 
     return render(request, 'crm/change_user_pass.html', {'form': form})
+
+def restore_account(request):
+    if request.method == 'POST':
+        if request.POST['email']:
+            form = RestoreAccountForm(request.POST)
+            print(request.POST)
+
+
+            try:
+                user = User.objects.get(email=request.POST['email'])
+            except:
+                user = None
+            print(user)
+            to = user.email
+            subject = 'Restore you account'
+            body = 
+            # create and send code
+            # to = Profile.objects.get(id=date_form['executor'].id).user.email
+            # subject = date_form['subject']
+            # body = f"ОТ: {request.user.profile.surname} {request.user.profile.name} \n\n {date_form['description']}"
+            # try:
+            #     send_mail(to, subject, body)
+            # except:
+            #     messages.error(request, 'Email was not sent')
+
+    form = RestoreAccountForm()
+
+    return render(request, 'crm/restore_account.html', {'form': form})
 
 
 
