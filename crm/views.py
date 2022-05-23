@@ -1,4 +1,5 @@
 import json
+import django.contrib.auth.hashers as hash
 from datetime import date
 from .sender import send_mail
 from django.db.models import Q
@@ -10,7 +11,7 @@ from django.contrib.auth import login, authenticate, logout
 from .models import Profile, Task, ArchiveTask, Position, Comment
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse, Http404
 from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm,\
-    CommentCreateForm, DepartmentCreateForm, PositionCreateForm
+    CommentCreateForm, DepartmentCreateForm, PositionCreateForm, ChangePasswordForm
 
 
 # Create your views here.
@@ -377,5 +378,27 @@ def create_workplace(request):
     return render(request, 'crm/create_workplace.html', {'form_dep': form_dep,
                                                          'form_pos': form_pos,
                                                          'dep': dep})
+
+@login_required
+# user can change the password
+def change_password(request):
+    user = User.objects.get(id=request.user.id)
+    if request.method == 'POST':
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid:
+            if hash.check_password(request.POST['old_password'], user.password):
+                if request.POST['new_password'] == request.POST['confirm_password']:
+                    user.set_password(request.POST['confirm_password'])
+                    user.save()
+                    return render(request, 'crm/change_user_pass_done.html')
+                else:
+                    messages.error(request, 'new password and confirm password do not match')
+            else:
+                messages.error(request, 'wrong old password')
+    else:
+        form = ChangePasswordForm()
+
+    return render(request, 'crm/change_user_pass.html', {'form': form})
+
 
 

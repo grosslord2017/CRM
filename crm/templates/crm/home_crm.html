@@ -47,6 +47,10 @@
                 <p>
                     <a href="{% url 'edit_profile' %}">Редактировать профиль</a>
                 </p>
+                <p>
+                    <a href="{% url 'change_password' %}">Сменить пароль</a>
+                </p>
+
                 {% if user.is_superuser %}
                     <p>
                         <a href="{% url 'archive' %}">Архив</a>

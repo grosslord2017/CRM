@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 
+
 urlpatterns = [
     path('', views.home_crm, name='home_crm'),
     path('contact/', views.contact_crm, name='contact_crm'),
@@ -17,4 +18,5 @@ urlpatterns = [
     path('choice_position', views.choice_position, name='choice_position'),
     path('choice-profile', views.choice_profile, name='choice-profile'),
     path('create_workplace/', views.create_workplace, name='create_workplace'),
+    path('change_password/', views.change_password, name='change_password'),
 ]
