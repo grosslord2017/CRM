@@ -60,31 +60,37 @@ def user_login(request):
 def user_registration(request):
     if request.user.is_authenticated:
         return Http404
+
     group = Group.objects.all()
     position = Position.objects.all()
     if request.method == 'POST':
         user_form = UserRegistrationForm(request.POST)
         user_filling_form = ProfileFillingForm(request.POST)
         if user_form.is_valid() and user_filling_form.is_valid():
-            profile = user_filling_form.cleaned_data
-            # Create a new user object but avoid saving it yet
-            new_user = user_form.save(commit=False)
-            # Set the chosen password
-            new_user.set_password(user_form.cleaned_data['password'])
-            # Save the User object
-            new_user.save()
-            # create empty profile for new user (user=new_user) - привязка по id к созданому юзеру
-            # Create the user profile
-            Profile.objects.create(
-                user=new_user,
-                name=profile['name'],
-                surname=profile['surname'],
-                patronymic=profile['patronymic'],
-                telephone=profile['telephone'],
-                department_id=profile['department'].id,
-                position_id=profile['position'].id,
-            )
-            return render(request, 'crm/registration_done.html', {'new_user': new_user})
+
+            if not verification_login(request.POST['email']):
+
+                profile = user_filling_form.cleaned_data
+                # Create a new user object but avoid saving it yet
+                new_user = user_form.save(commit=False)
+                # Set the chosen password
+                new_user.set_password(user_form.cleaned_data['password'])
+                # Save the User object
+                new_user.save()
+                # create empty profile for new user (user=new_user) - привязка по id к созданому юзеру
+                # Create the user profile
+                Profile.objects.create(
+                    user=new_user,
+                    name=profile['name'],
+                    surname=profile['surname'],
+                    patronymic=profile['patronymic'],
+                    telephone=profile['telephone'],
+                    department_id=profile['department'].id,
+                    position_id=profile['position'].id,
+                )
+                return render(request, 'crm/registration_done.html', {'new_user': new_user})
+            else:
+                messages.error(request, 'emeil is already in use')
     else:
         user_form = UserRegistrationForm()
         user_filling_form = ProfileFillingForm()
@@ -182,7 +188,6 @@ def task_create(request):
 @login_required
 def my_tasks(request):
     profile = Profile.objects.get(user_id=request.user.id)
-    # tasks = Task.objects.filter(executor_id=profile, status_completed=False).all()
     tasks = Task.objects.filter(executor_id=profile).all()
 
     # подумать как вытащить дату завершения таска и прописать ее на странице my_task
@@ -314,6 +319,7 @@ def choice_position(request):
 
         return JsonResponse({'pos_l': pos_list})
 
+# ajax request
 def choice_profile(request):
     department_id = json.loads(request.body).get('depId')
     task_id = json.loads(request.body).get('taskId')
@@ -360,7 +366,7 @@ def create_workplace(request):
         form_pos = PositionCreateForm(request.POST)
         if request.POST.get('department', False):
             try:
-                department = Group.objects.get(name=request.POST['department'])
+                Group.objects.get(name=request.POST['department'])
             except:
                 Group.objects.create(
                     name=request.POST['department']
@@ -445,3 +451,17 @@ def restore_account(request):
 
     return render(request, 'crm/restore_account.html', {'form': form})
 
+def verification_login(email):
+    user_by_email = get_or_none(User, email=email)
+    if user_by_email:
+        return True
+    else:
+        return False
+
+
+# попробовать заменить все try/except на єту функцию!!!
+def get_or_none(model, *args, **kwargs):
+    try:
+        return model.objects.get(*args, **kwargs)
+    except:
+        return None
