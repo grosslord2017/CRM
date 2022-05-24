@@ -1,3 +1,6 @@
+import datetime
+import time
+
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
@@ -42,9 +45,14 @@ class Comment(models.Model):
 class ArchiveTask(models.Model):
 
     date_create = models.DateField()
-    date_complite = models.DateField(default=date.today)
+    date_complete = models.DateField(default=date.today)
     subject = models.CharField(max_length=150)
     task_manager = models.CharField(max_length=150)
     executor = models.CharField(max_length=150)
     description = models.CharField(max_length=1000)
 
+class VerifiCode(models.Model):
+
+    user_login = models.CharField(max_length=100)
+    code = models.IntegerField(default=None)
+    time_create = models.TimeField(default=timezone.now)

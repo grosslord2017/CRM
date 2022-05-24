@@ -23,7 +23,7 @@
     }
 
     /* Full-width input fields */
-    input[type=text] {
+    input[type=text], input[type=password] {
         width: 100%;
         padding: 15px;
         margin: 5px 0 22px 0;
@@ -31,7 +31,7 @@
         background: #f1f1f1;
     }
 
-    input[type=text]:focus {
+    input[type=text]:focus, input[type=password]:focus {
         background-color: #ddd;
         outline: none;
     }
@@ -59,8 +59,14 @@
         <div class="container">
             <h3>Restore account</h3>
 
-                <label for="code"><b>verification code:</b></label>
-                <input type="text" placeholder="Enter the code from the email" name="code" required>
+            <label for="code"><b>verification code:</b></label>
+            <input type="text" placeholder="Enter code from the email" name="code" required>
+
+            <label for="new_pass"><b>new password:</b></label>
+            <input type="password" placeholder="Enter new password" name="newpass" required>
+
+            <label for="confirm_new_pass"><b>confirm new password:</b></label>
+            <input type="password" placeholder="Confirm new password" name="confnewpass" required>
 
             <button type="submit" class="btn">confirm</button>
         </div>

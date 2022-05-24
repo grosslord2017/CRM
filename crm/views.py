@@ -1,7 +1,6 @@
 import json
 import django.contrib.auth.hashers as hash
 from datetime import date
-from corp_site import settings
 from random import randint
 from .sender import send_mail
 from django.db.models import Q
@@ -10,7 +9,7 @@ from django.contrib.auth.models import Group, User
 from django.http.response import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
-from .models import Profile, Task, ArchiveTask, Position, Comment
+from .models import Profile, Task, ArchiveTask, Position, Comment, VerifiCode
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse, Http404
 from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm,\
     CommentCreateForm, DepartmentCreateForm, PositionCreateForm, ChangePasswordForm, RestoreAccountForm
@@ -38,6 +37,9 @@ def user_logout(request):
     return HttpResponseRedirect('/')
 
 def user_login(request):
+    if request.user.is_authenticated:
+        return Http404
+
     if request.method == 'POST':
         form = AutorizationForm(request.POST)
         if form.is_valid():
@@ -56,6 +58,8 @@ def user_login(request):
     return render(request, 'crm/login.html', {'form': form})
 
 def user_registration(request):
+    if request.user.is_authenticated:
+        return Http404
     group = Group.objects.all()
     position = Position.objects.all()
     if request.method == 'POST':
@@ -403,30 +407,39 @@ def change_password(request):
     return render(request, 'crm/change_user_pass.html', {'form': form})
 
 def restore_account(request):
-
-    print(request.POST)
     if request.method == 'POST':
         if request.POST.get('email', False):
-            settings.VERIFICATION_CODE = randint(10000, 99999)
-            form = RestoreAccountForm(request.POST)
-
+            code = randint(10000, 99999)
             try:
                 user = User.objects.get(email=request.POST['email'])
-                print(user)
+                VerifiCode.objects.create(
+                    user_login=user.username,
+                    code=code
+                )
                 to = user.email
                 subject = 'Restore you account'
-                # body = f'Someone is trying to recover your account. If this is not you, please ignore this email. \n' \
-                #        f'Your login: {user.username} \n' \
-                #        f'code: {code}'
-                # send_mail(to, subject, body)
-                print(settings.VERIFICATION_CODE)
+                body = f'Someone is trying to recover your account. If this is not you, please ignore this email. \n' \
+                       f'Your login: {user.username} \n' \
+                       f'code: {code}'
+                send_mail(to, subject, body)
                 return render(request, 'crm/verification_code.html')
             except:
                 messages.error(request, 'there is no such mail in the database')
         elif request.POST.get('code', False):
-            print(settings.VERIFICATION_CODE)
-            print(request.POST['code'])
-
+            try:
+                confirm = VerifiCode.objects.get(code=request.POST['code'])
+                user = User.objects.get(username=confirm.user_login)
+                if request.POST['newpass'] == request.POST['confnewpass']:
+                    user.set_password(request.POST['confnewpass'])
+                    user.save()
+                    VerifiCode.objects.filter(user_login=user.username).delete()
+                    messages.success(request, 'new password has been set')
+                    return HttpResponseRedirect('/')
+                else:
+                    messages.error(request, 'passwords do not match')
+            except:
+                messages.error(request, 'code doesn\'t work')
+            return render(request, 'crm/verification_code.html')
 
     form = RestoreAccountForm()
 
