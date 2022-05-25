@@ -1,0 +1,57 @@
+{% extends "crm/base.html" %}
+
+{% block style%}
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        width: 100%;
+        border: 1px solid #ddd;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 16px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2
+    }
+{% endblock %}
+
+
+{% block body %}
+    <table>
+        <thead>
+            <tr>
+                <th>First/Last name</th>
+                <th>Login</th>
+                <th>Department</th>
+                <th>Position</th>
+                <th>Delete/Up to admin</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Jill</td>
+                <td>Smith</td>
+                <td>50</td>
+                <td>asdf</td>
+                <td><button>delete</button>|<button>UP</button></td>
+            </tr>
+            <tr>
+                <td>Eve</td>
+                <td>Jackson</td>
+                <td>94</td>
+                <td>Smith</td>
+                <td>50</td>
+            </tr>
+            <tr>
+                <td>Adam</td>
+                <td>Johnson</td>
+                <td>67</td>
+                <td>Smith</td>
+                <td>50</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

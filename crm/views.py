@@ -456,7 +456,7 @@ def restore_account(request):
     return render(request, 'crm/restore_account.html', {'form_email': form_email})
 
 def user_management(request):
-    pass
+    return render(request, 'crm/user_management.html')
 
 def verification_email(email):
     user_by_email = get_or_none(User, email=email)
