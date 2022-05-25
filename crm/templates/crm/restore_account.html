@@ -59,10 +59,7 @@
         <div class="container">
             <h3>Restore account</h3>
 
-            {% for f in form %}
-                <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
-                <input type="email" placeholder="Enter {{ f.name }}" name="{{ f.name }}" required>
-            {% endfor %}
+            {{ form_email }}
 
             <button type="submit" class="btn">confirm</button>
         </div>

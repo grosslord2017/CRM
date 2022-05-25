@@ -12,7 +12,8 @@ from django.contrib.auth import login, authenticate, logout
 from .models import Profile, Task, ArchiveTask, Position, Comment, VerifiCode
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse, Http404
 from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm,\
-    CommentCreateForm, DepartmentCreateForm, PositionCreateForm, ChangePasswordForm, RestoreAccountForm
+    CommentCreateForm, DepartmentCreateForm, PositionCreateForm, ChangePasswordForm, RestoreAccountForm,\
+    CreateNewPass
 
 
 # Create your views here.
@@ -68,14 +69,12 @@ def user_registration(request):
         user_filling_form = ProfileFillingForm(request.POST)
         if user_form.is_valid() and user_filling_form.is_valid():
 
-            if not verification_login(request.POST['email']):
+            if not verification_email(request.POST['email']):
 
                 profile = user_filling_form.cleaned_data
                 # Create a new user object but avoid saving it yet
                 new_user = user_form.save(commit=False)
-                # Set the chosen password
                 new_user.set_password(user_form.cleaned_data['password'])
-                # Save the User object
                 new_user.save()
                 # create empty profile for new user (user=new_user) - привязка по id к созданому юзеру
                 # Create the user profile
@@ -154,7 +153,6 @@ def edit_profile(request):
                                                      'profile_form': profile_form,
                                                      'depart': department})
 
-# пока работает нормлаьно, но возможно надо будет допиливать!!!! и добавить проверку на дату из прошлого
 @login_required
 def task_create(request):
     group = Group.objects.all()
@@ -308,6 +306,7 @@ def views_archive(request):
     else:
         raise Http404
 
+# ajax in registration template
 def choice_position(request):
     department_id = json.loads(request.body).get('depId')
     if department_id:
@@ -319,29 +318,25 @@ def choice_position(request):
 
         return JsonResponse({'pos_l': pos_list})
 
-# ajax request
+# ajax in task create and delegate
 def choice_profile(request):
     department_id = json.loads(request.body).get('depId')
     task_id = json.loads(request.body).get('taskId')
     positions = Position.objects.filter(department_fk=department_id)
     pos_profile = []
 
-    if task_id:
-        task = Task.objects.get(id=task_id)
-        for position in positions:
+    for position in positions:
+        if task_id:
+            task = Task.objects.get(id=task_id)
             pos_prof = Profile.objects.filter(~Q(user_id=request.user.id) & ~Q(id=task.task_manager.profile.id),
-                                              position=position.id)
-            if pos_prof:
-                for pos_p in pos_prof:
-                    prof = [pos_p.name, pos_p.surname, position.name, pos_p.id]
-                    pos_profile.append(prof)
-    else:
-        for position in positions:
+                                                  position=position.id)
+        else:
             pos_prof = Profile.objects.filter(~Q(user_id=request.user.id), position=position.id)
-            if pos_prof:
-                for pos_p in pos_prof:
-                    prof = [pos_p.name, pos_p.surname, position.name, pos_p.id]
-                    pos_profile.append(prof)
+
+        if pos_prof:
+            for pos_p in pos_prof:
+                prof = [pos_p.name, pos_p.surname, position.name, pos_p.id]
+                pos_profile.append(prof)
 
     return JsonResponse({'pos_p': pos_profile})
 
@@ -362,28 +357,28 @@ def task_and_user_verification(request, task, flag):
 def create_workplace(request):
     dep = Group.objects.all()
     if request.method == 'POST':
+
         form_dep = DepartmentCreateForm(request.POST)
         form_pos = PositionCreateForm(request.POST)
-        if request.POST.get('department', False):
-            try:
-                Group.objects.get(name=request.POST['department'])
-            except:
+        if not request.POST.get('department_fk', False) and form_dep.is_valid():
+            form = form_dep.cleaned_data
+            if not get_or_none(Group, name=form['name']):
                 Group.objects.create(
-                    name=request.POST['department']
+                    name=form['name']
                 )
                 messages.success(request, 'Department create successfully')
-                return HttpResponseRedirect('/create_workplace/')
-        elif request.POST.get('position', False):
-            try:
-                position = Position.objects.get(name=request.POST['position'])
-            except:
-                Position.objects.create(
-                    department_fk=Group.objects.get(id=int(request.POST['dep_id'])),
-                    name=request.POST['position']
-                    )
-                messages.success(request, 'Position create successfully')
-                return HttpResponseRedirect('/create_workplace/')
 
+                return HttpResponseRedirect('/create_workplace/')
+        else:
+            if form_pos.is_valid():
+                form = form_pos.cleaned_data
+                if not get_or_none(Position, name=form['name']):
+                    Position.objects.create(
+                        department_fk=form['department_fk'],
+                        name=form['name']
+                    )
+                    messages.success(request, 'Position create successfully')
+                    return HttpResponseRedirect('/create_workplace/')
     else:
         form_dep = DepartmentCreateForm()
         form_pos = PositionCreateForm()
@@ -412,54 +407,66 @@ def change_password(request):
 
     return render(request, 'crm/change_user_pass.html', {'form': form})
 
+# if forget password you make restore account and create new password
 def restore_account(request):
     if request.method == 'POST':
-        if request.POST.get('email', False):
+        form_email = RestoreAccountForm(request.POST)
+        form_new_passwd = CreateNewPass(request.POST)
+        if request.POST.get('email', False) and form_email.is_valid():
             code = randint(10000, 99999)
-            try:
-                user = User.objects.get(email=request.POST['email'])
+            print(code)
+            form = form_email.cleaned_data
+            user = get_or_none(User, email=form['email'])
+            if user:
                 VerifiCode.objects.create(
                     user_login=user.username,
                     code=code
                 )
                 to = user.email
                 subject = 'Restore you account'
-                body = f'Someone is trying to recover your account. If this is not you, please ignore this email. \n' \
-                       f'Your login: {user.username} \n' \
+                body = f'Someone is trying to recover your account. If this is not you, please ignore this email. \n'\
+                       f'Your login: {user.username} \n'\
                        f'code: {code}'
-                send_mail(to, subject, body)
-                return render(request, 'crm/verification_code.html')
-            except:
+                # send_mail(to, subject, body)
+
+                form_new_passwd = CreateNewPass()
+                return render(request, 'crm/verification_code.html', {'form_new_passwd': form_new_passwd})
+            else:
                 messages.error(request, 'there is no such mail in the database')
-        elif request.POST.get('code', False):
-            try:
-                confirm = VerifiCode.objects.get(code=request.POST['code'])
+        elif request.POST.get('code', False) and form_new_passwd.is_valid():
+            form = form_new_passwd.cleaned_data
+            confirm = get_or_none(VerifiCode, code=form['code'])
+            if confirm:
                 user = User.objects.get(username=confirm.user_login)
-                if request.POST['newpass'] == request.POST['confnewpass']:
-                    user.set_password(request.POST['confnewpass'])
+                if form['new_passwd'] == form['confirm_passwd']:
+                    user.set_password(form['confirm_passwd'])
                     user.save()
                     VerifiCode.objects.filter(user_login=user.username).delete()
                     messages.success(request, 'new password has been set')
                     return HttpResponseRedirect('/')
                 else:
                     messages.error(request, 'passwords do not match')
-            except:
+            else:
                 messages.error(request, 'code doesn\'t work')
-            return render(request, 'crm/verification_code.html')
 
-    form = RestoreAccountForm()
+            form_new_passwd = CreateNewPass()
+            return render(request, 'crm/verification_code.html', {'form_new_passwd': form_new_passwd})
 
-    return render(request, 'crm/restore_account.html', {'form': form})
+    form_email = RestoreAccountForm()
 
-def verification_login(email):
+    return render(request, 'crm/restore_account.html', {'form_email': form_email})
+
+def user_management(request):
+    pass
+
+def verification_email(email):
     user_by_email = get_or_none(User, email=email)
     if user_by_email:
         return True
     else:
         return False
 
-
-# попробовать заменить все try/except на єту функцию!!!
+# replaces block try/except
 def get_or_none(model, *args, **kwargs):
     try:
         return model.objects.get(*args, **kwargs)

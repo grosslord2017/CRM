@@ -75,4 +75,10 @@ class ChangePasswordForm(forms.Form):
 
 class RestoreAccountForm(forms.Form):
 
-    email = forms.EmailField(label='Email', widget=forms.EmailField)
+    email = forms.EmailField(label='Email')
+
+class CreateNewPass(forms.Form):
+
+    code = forms.CharField(required=True)
+    new_passwd = forms.CharField(label='New password', widget=forms.PasswordInput, required=True)
+    confirm_passwd = forms.CharField(label='Repeat new password', widget=forms.PasswordInput, required=True)

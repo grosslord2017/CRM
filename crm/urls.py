@@ -20,4 +20,5 @@ urlpatterns = [
     path('create_workplace/', views.create_workplace, name='create_workplace'),
     path('change_password/', views.change_password, name='change_password'),
     path('restore_account/', views.restore_account, name='restore_account'),
+    path('user_management/', views.user_management, name='user_management'),
 ]

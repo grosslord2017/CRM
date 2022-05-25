@@ -29,6 +29,7 @@ class MailSender(object):
         server.quit()
 
 def send_mail(to, subject, body):
-    create = MailSender(to, subject, body)
-    create.connect_server()
+        create = MailSender(to, subject, body)
+        create.connect_server()
+
 
