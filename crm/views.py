@@ -414,7 +414,6 @@ def restore_account(request):
         form_new_passwd = CreateNewPass(request.POST)
         if request.POST.get('email', False) and form_email.is_valid():
             code = randint(10000, 99999)
-            print(code)
             form = form_email.cleaned_data
             user = get_or_none(User, email=form['email'])
             if user:
@@ -427,7 +426,7 @@ def restore_account(request):
                 body = f'Someone is trying to recover your account. If this is not you, please ignore this email. \n'\
                        f'Your login: {user.username} \n'\
                        f'code: {code}'
-                # send_mail(to, subject, body)
+                send_mail(to, subject, body)
 
                 form_new_passwd = CreateNewPass()
                 return render(request, 'crm/verification_code.html', {'form_new_passwd': form_new_passwd})
