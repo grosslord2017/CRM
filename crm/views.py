@@ -1,6 +1,6 @@
 import json
 import django.contrib.auth.hashers as hash
-from datetime import date
+from datetime import date, timedelta
 from random import randint
 from .sender import send_mail
 from django.db.models import Q
@@ -168,6 +168,7 @@ def edit_profile(request):
 def task_create(request):
     group = Group.objects.all()
     date_today = str(date.today())
+    date_future = str(date.today() + timedelta(days=365 * 2))
     if request.method == 'POST':
         form = TaskCreateForm(request.POST)
         if form.is_valid():
@@ -192,7 +193,8 @@ def task_create(request):
             return HttpResponseRedirect('/')
     else:
         form = TaskCreateForm()
-    return render(request, 'crm/task_form.html', {'form': form, 'date': date_today, 'group': group})
+    return render(request, 'crm/task_form.html', {'form': form, 'date_today': date_today,
+                                                  'date_future': date_future, 'group': group})
 
 @login_required
 def my_tasks(request):
@@ -470,17 +472,22 @@ def user_management(request):
     all_users = Profile.objects.filter(~Q(user_id=request.user.id))
 
     if request.method == 'POST':
+        print(request.POST)
+        try:
+            user = request.POST['delete']
+        except:
+            user = request.POST['permission']
+        user = User.objects.get(username=user)
+
         if request.POST.get('delete', False):
-            user = Profile.objects.get(id=request.POST['delete']).user
             user.delete()
-        elif request.POST.get('up', False):
-            user = Profile.objects.get(id=request.POST['up']).user
-            user.is_superuser = True
+        elif request.POST.get('permission', False):
+            if user.is_superuser:
+                user.is_superuser = False
+            else:
+                user.is_superuser = True
             user.save()
-        elif request.POST.get('down', False):
-            user = Profile.objects.get(id=request.POST['down']).user
-            user.is_superuser = False
-            user.save()
+
 
     return render(request, 'crm/user_management.html', {'all_users': all_users})
 

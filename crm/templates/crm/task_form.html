@@ -89,7 +89,8 @@
 
                         {% if f.name == 'final_date' %}
                             <label for="{{ f.name }}"><i>{{ f.name }}:</i></label>
-                            <input value="{{ date }}" type="date" name="{{ f.name }}" min="{{ date }}" required>
+                            <input value="{{ date }}" type="date" name="{{ f.name }}" min="{{ date_today }}"
+                                   max="{{ date_future }}" required>
                         {% elif f.name == 'executor' %}
 
                             <label><i>department:</i></label>
