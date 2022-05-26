@@ -28,7 +28,7 @@ class ProfileFillingForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ('name', 'surname', 'patronymic', 'telephone', 'department', 'position')
+        fields = ('name', 'surname', 'telephone', 'department', 'position')
 
 class UserEditForm(forms.ModelForm):
 

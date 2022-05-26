@@ -23,7 +23,7 @@
     <table>
         <thead>
             <tr>
-                <th>First/Last name</th>
+                <th>First / Last name</th>
                 <th>Login</th>
                 <th>Department</th>
                 <th>Position</th>
@@ -31,27 +31,25 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>Jill</td>
-                <td>Smith</td>
-                <td>50</td>
-                <td>asdf</td>
-                <td><button>delete</button>|<button>UP</button></td>
-            </tr>
-            <tr>
-                <td>Eve</td>
-                <td>Jackson</td>
-                <td>94</td>
-                <td>Smith</td>
-                <td>50</td>
-            </tr>
-            <tr>
-                <td>Adam</td>
-                <td>Johnson</td>
-                <td>67</td>
-                <td>Smith</td>
-                <td>50</td>
-            </tr>
+            {% for user in all_users %}
+                    <tr id="{{ user.id }}">
+                        <td>{{ user.name }} {{ user.surname }}</td>
+                        <td>{{ user.user }}</td>
+                        <td>{{ user.department }}</td>
+                        <td>{{ user.position.name }}</td>
+                        <td>
+                            <form method="POST">
+                            {% csrf_token %}
+                                <button name="delete" value="{{ user.id }}">delete</button> |
+                                {% if user.user.is_superuser %}
+                                    <button name="down" value="{{ user.id }}">down to user</button>
+                                {% else %}
+                                    <button name="up" value="{{ user.id }}">up to admin</button>
+                                {% endif %}
+                            </form>
+                        </td>
+                    </tr>
+            {% endfor %}
         </tbody>
     </table>
 {% endblock %}

@@ -20,7 +20,6 @@ class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, default=None, null=True)
     name = models.CharField(max_length=50, default='')
     surname = models.CharField(max_length=100, default='')
-    patronymic = models.CharField(max_length=50, default='')
     telephone = models.CharField(max_length=20, default='')
     department = models.ForeignKey(Group, on_delete=models.DO_NOTHING, default=None, null=True)
     position = models.ForeignKey(Position, on_delete=models.DO_NOTHING, default=None, null=True)

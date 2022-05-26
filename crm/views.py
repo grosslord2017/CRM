@@ -82,7 +82,6 @@ def user_registration(request):
                     user=new_user,
                     name=profile['name'],
                     surname=profile['surname'],
-                    patronymic=profile['patronymic'],
                     telephone=profile['telephone'],
                     department_id=profile['department'].id,
                     position_id=profile['position'].id,
@@ -108,7 +107,6 @@ def edit_profile(request):
             Profile.objects.create(
                     name=request.POST['name'],
                     surname=request.POST['surname'],
-                    patronymic=request.POST['patronymic'],
                     telephone=request.POST['telephone'],
                     department_id=None,
                     position_id=None,
@@ -456,7 +454,22 @@ def restore_account(request):
     return render(request, 'crm/restore_account.html', {'form_email': form_email})
 
 def user_management(request):
-    return render(request, 'crm/user_management.html')
+    all_users = Profile.objects.filter(~Q(user_id=request.user.id))
+
+    if request.method == 'POST':
+        if request.POST.get('delete', False):
+            user = Profile.objects.get(id=request.POST['delete']).user
+            user.delete()
+        elif request.POST.get('up', False):
+            user = Profile.objects.get(id=request.POST['up']).user
+            user.is_superuser = True
+            user.save()
+        elif request.POST.get('down', False):
+            user = Profile.objects.get(id=request.POST['down']).user
+            user.is_superuser = False
+            user.save()
+
+    return render(request, 'crm/user_management.html', {'all_users': all_users})
 
 def verification_email(email):
     user_by_email = get_or_none(User, email=email)
