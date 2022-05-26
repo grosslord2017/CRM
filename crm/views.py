@@ -45,7 +45,7 @@ def user_login(request):
         form = AutorizationForm(request.POST)
         if form.is_valid():
             form_data = form.cleaned_data
-            user = authenticate(username=form_data['username'], password=form_data['password'])
+            user = authenticate(username=form_data['username'].lower(), password=form_data['password'])
             if user is not None:
                 if user.is_active:
                     login(request, user)
@@ -72,10 +72,23 @@ def user_registration(request):
             if not verification_email(request.POST['email']):
 
                 profile = user_filling_form.cleaned_data
-                # Create a new user object but avoid saving it yet
-                new_user = user_form.save(commit=False)
-                new_user.set_password(user_form.cleaned_data['password'])
+                user = user_form.cleaned_data
+
+                if user['password'] != user['password2']:
+                    messages.error(request, 'Passwords don\'t match.')
+                    return HttpResponseRedirect('/registration/')
+
+                new_user = User.objects.create(
+                    username=user['username'].lower(),
+                    email=user['email']
+                )
+                new_user.set_password(user['password'])
                 new_user.save()
+
+                # Create a new user object but avoid saving it yet
+                # new_user = user_form.save(commit=False)
+                # new_user.set_password(user_form.cleaned_data['password'])
+                # new_user.save()
                 # create empty profile for new user (user=new_user) - привязка по id к созданому юзеру
                 # Create the user profile
                 Profile.objects.create(
