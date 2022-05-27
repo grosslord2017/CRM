@@ -16,14 +16,63 @@
     tr:nth-child(even) {
         background-color: #f2f2f2
     }
+
+<!--    Search     -->
+    body {
+        font-family: Arial;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    form.example input[type=text] {
+        padding: 10px;
+        font-size: 17px;
+        border: 1px solid grey;
+        float: left;
+        width: 80%;
+        background: #f1f1f1;
+    }
+
+    form.example button {
+        float: left;
+        width: 20%;
+        padding: 10px;
+        background: #2196F3;
+        color: white;
+        font-size: 17px;
+        border: 1px solid grey;
+        border-left: none;
+        cursor: pointer;
+    }
+
+    form.example button:hover {
+        background: #0b7dda;
+    }
+
+    form.example::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
 {% endblock %}
 
 
 {% block body %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <form class="example" method="POST">
+        {% csrf_token %}
+        <input type="text" placeholder="Search.." name="search">
+        <button type="submit"><i class="fa fa-search"></i></button>
+    </form>
+
     <table>
         <thead>
             <tr>
                 <th>First / Last name</th>
+                <th>Email</th>
+                <th>Telephone</th>
                 <th>Login</th>
                 <th>Department</th>
                 <th>Position</th>
@@ -34,6 +83,8 @@
             {% for user in all_users %}
                     <tr id="{{ user.id }}">
                         <td>{{ user.name }} {{ user.surname }}</td>
+                        <td>{{ user.user.email }}</td>
+                        <td>{{ user.telephone }}</td>
                         <td>{{ user.user }}</td>
                         <td>{{ user.department }}</td>
                         <td>{{ user.position.name }}</td>

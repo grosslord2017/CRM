@@ -51,9 +51,11 @@ def user_login(request):
                     login(request, user)
                     return HttpResponseRedirect('/')
                 else:
-                    return HttpResponse('Disabled account')
+                    messages.error(request, 'Disabled account')
+                    return HttpResponseRedirect('/login/')
             else:
-                return HttpResponse('Invalid login')
+                messages.error(request, 'Invalid login')
+                return HttpResponseRedirect('/login/')
     else:
         form = AutorizationForm()
     return render(request, 'crm/login.html', {'form': form})
@@ -315,6 +317,13 @@ def supervising_task_inside(request, pk):
 def views_archive(request):
     if request.user.is_superuser:
         archive = ArchiveTask.objects.order_by('date_create')
+
+        if request.method == 'POST':
+            search = request.POST['search']
+            archive = ArchiveTask.objects.filter(Q(date_create__icontains=search) | Q(subject__icontains=search) |
+                                            Q(task_manager__icontains=search) | Q(executor__icontains=search) |
+                                            Q(date_complete__icontains=search))
+
         return render(request, 'crm/archive.html', {'archive': archive})
     else:
         raise Http404
@@ -472,22 +481,30 @@ def user_management(request):
     all_users = Profile.objects.filter(~Q(user_id=request.user.id))
 
     if request.method == 'POST':
-        print(request.POST)
-        try:
-            user = request.POST['delete']
-        except:
-            user = request.POST['permission']
-        user = User.objects.get(username=user)
 
-        if request.POST.get('delete', False):
-            user.delete()
-        elif request.POST.get('permission', False):
-            if user.is_superuser:
-                user.is_superuser = False
-            else:
-                user.is_superuser = True
-            user.save()
+        if request.POST.get('delete', False) or request.POST.get('permission', False):
+            try:
+                user = request.POST['delete']
+            except:
+                user = request.POST['permission']
+            user = User.objects.get(username=user)
 
+            if request.POST.get('delete', False):
+                user.delete()
+            elif request.POST.get('permission', False):
+                if user.is_superuser:
+                    user.is_superuser = False
+                else:
+                    user.is_superuser = True
+                user.save()
+
+        elif request.POST.get('search', False):
+            search = request.POST['search']
+            all_users = Profile.objects.filter(Q(telephone__icontains=search) | Q(name__icontains=search) |
+                                            Q(surname__icontains=search) | Q(department_id__name__icontains=search) |
+                                            Q(position_id__name__icontains=search) |
+                                            Q(user_id__username__icontains=search) |
+                                            Q(user_id__email__icontains=search)).exclude(Q(user_id=request.user.id))
 
     return render(request, 'crm/user_management.html', {'all_users': all_users})
 

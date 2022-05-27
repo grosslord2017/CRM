@@ -64,11 +64,17 @@
                 {% endif %}
             </div>
             <div class="col right" style="background-color:#bbb;">
-                <p>Срочные задачи:</p>
+                <p><h3>Top hot tasks:</h3></p>
                 {% for hot_task in user_hot_task %}
                     <div class="hot">
-                        <p id="{{ hot_task.id}}"><strong>{{ hot_task.subject }}</strong></p>
-                        <p>{{ hot_task.description }}</p>
+                        <p id="{{ hot_task.id}}">
+                            <a href="{% url 'my_task_inside' pk=hot_task.id %}">
+                                <strong>{{ hot_task.subject }}</strong>
+                                <br>
+                                finish before: ({{ hot_task.final_date }})
+                            </a>
+                        </p>
+                        <p>{{ hot_task.description|linebreaks }}</p>
                         <hr>
                     </div>
                 {% endfor %}

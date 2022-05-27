@@ -41,7 +41,6 @@ except ImportError:
             'USER': str(os.getenv("DB_USER")),
             'PASSWORD': str(os.getenv("DB_PASSWD")),
             'HOST': str(os.getenv("DB_HOST")),  # Set to empty string for localhost.
-
             'PORT': '5432',  # Set to empty string for default.
         }
     }
