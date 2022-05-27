@@ -29,6 +29,16 @@ except ImportError:
     AWS_STORAGE_BUCKET_NAME = str(os.getenv("S3_BUCKET_NAME"))
     S3_UPLOAD_DIRECTORY = str(os.getenv("S3_UPLOAD_DIRECTORY"))
 
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'dbf40c26mdq7ru',
+            'USER': 'umauvvhtkydtdu',
+            'PASSWORD': 'd01d0678fac69f511106537723d35eeef308d1c808adba702134c9eeb7853802',
+            'HOST': 'ec2-35-168-194-15.compute-1.amazonaws.com',  # Set to empty string for localhost.
+            'PORT': '5432',  # Set to empty string for default.
+        }
+    }
 
 #--------------------------------
 
@@ -97,12 +107,15 @@ WSGI_APPLICATION = 'corp_site.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+
+
 
 db_from_env = dj_database_url.config()
 DATABASES['default'].update(db_from_env)
