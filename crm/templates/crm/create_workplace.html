@@ -96,29 +96,29 @@
         </div>
 
         <div id="Department" class="tabcontent">
-            <h3>Department</h3>
             <form method="POST">
                 {% csrf_token %}
+<!--                <label for="id_name">Department:</label>-->
+                <label for="id_name">Department:</label>
                 {{ form_dep.name }}
-<!--                <input type="text" placeholder="Enter department" name="department">-->
                 <button type="submit" class="createbtn">create</button>
             </form>
         </div>
 
         <div id="Position" class="tabcontent">
-            <h3>Position</h3>
             <form method="POST">
                 {% csrf_token %}
-<!--                <label for="dep_id">Department:</label>-->
-<!--                <select name="dep_id" id="dep_id" required >-->
-<!--                    <option value="">&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</option>-->
-<!--                    {% for d in dep %}-->
-<!--                        <option value="{{ d.id }}">{{ d.name }}</option>-->
-<!--                    {% endfor %}-->
-<!--                </select>-->
-<!--                <label for="position">Position:</label>-->
-<!--                <input type="text" placeholder="Enter position" name="position">-->
-                    {{ form_pos }}
+                    {% for form in form_pos %}
+                        {% if form.name == 'department_fk' %}
+                            <label for="{{ form.name }}">Department:</label>
+                            {{ form }}
+                        {% else %}
+                            <label for="{{ form.name }}">Position:</label>
+                            {{ form }}
+                        {% endif %}
+                    {% endfor %}
+
+<!--                    {{ form_pos}}-->
                 <button type="submit" class="createbtn">create</button>
 
             </form>

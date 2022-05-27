@@ -28,10 +28,10 @@ def home_crm(request):
     except:
         return render(request, 'crm/home_crm.html')
 
-@login_required
-def contact_crm(request):
-    all_employees = Profile.objects.all()
-    return render(request, 'crm/contact_crm.html', {'employees': all_employees})
+# @login_required
+# def contact_crm(request):
+#     all_employees = Profile.objects.all()
+#     return render(request, 'crm/contact_crm.html', {'employees': all_employees})
 
 def user_logout(request):
     logout(request)
