@@ -20,7 +20,10 @@ try:
 except ImportError:
     SECRET_KEY = str(os.getenv("APP_SECRET_KEY"))
     BASE_DIR = Path(__file__).resolve().parent.parent
+
+    # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = False
+
     ALLOWED_HOSTS = ['*']
 
     # S3
@@ -29,35 +32,26 @@ except ImportError:
     AWS_STORAGE_BUCKET_NAME = str(os.getenv("S3_BUCKET_NAME"))
     S3_UPLOAD_DIRECTORY = str(os.getenv("S3_UPLOAD_DIRECTORY"))
 
+    # Database
+    # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'dbf40c26mdq7ru',
-            'USER': 'umauvvhtkydtdu',
-            'PASSWORD': 'd01d0678fac69f511106537723d35eeef308d1c808adba702134c9eeb7853802',
-            'HOST': 'ec2-35-168-194-15.compute-1.amazonaws.com',  # Set to empty string for localhost.
+            # 'NAME': 'dbf40c26mdq7ru',
+            # 'USER': 'umauvvhtkydtdu',
+            # 'PASSWORD': 'd01d0678fac69f511106537723d35eeef308d1c808adba702134c9eeb7853802',
+            # 'HOST': 'ec2-35-168-194-15.compute-1.amazonaws.com',  # Set to empty string for localhost.
+
+            'NAME': str(os.getenv("DB_NAME")),
+            'USER': str(os.getenv("DB_USER")),
+            'PASSWORD': str(os.getenv("DB_PASSWD")),
+            'HOST': str(os.getenv("DB_HOST")),  # Set to empty string for localhost.
+
             'PORT': '5432',  # Set to empty string for default.
         }
     }
 
 #--------------------------------
-
-
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-# BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-eu$=-%joa00uc_lbadv&j7kfzbdjq6=t6zy#*l$hrp@je&zm5w'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = False
-
-ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -102,19 +96,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'corp_site.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-
 
 
 db_from_env = dj_database_url.config()
