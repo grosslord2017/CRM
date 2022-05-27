@@ -37,11 +37,6 @@ except ImportError:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            # 'NAME': 'dbf40c26mdq7ru',
-            # 'USER': 'umauvvhtkydtdu',
-            # 'PASSWORD': 'd01d0678fac69f511106537723d35eeef308d1c808adba702134c9eeb7853802',
-            # 'HOST': 'ec2-35-168-194-15.compute-1.amazonaws.com',  # Set to empty string for localhost.
-
             'NAME': str(os.getenv("DB_NAME")),
             'USER': str(os.getenv("DB_USER")),
             'PASSWORD': str(os.getenv("DB_PASSWD")),
