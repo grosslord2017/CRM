@@ -1,55 +1,8 @@
 {% extends "crm/base.html" %}
 
-{% block style %}
-    body, html {
-        height: 100%;
-        font-family: Arial, Helvetica, sans-serif;
-        background-color: grey;
-    }
-
-    * {
-        box-sizing: border-box;
-    }
-
-    /* Add styles to the form container */
-    .container {
-        position: absolute;
-        right: 0;
-        left: 0;
-        margin: auto;
-        max-width: 500px;
-        padding: 16px;
-        background-color: white;
-    }
-
-    /* Full-width input fields */
-    input[type=text], input[type=password] {
-        width: 100%;
-        padding: 15px;
-        margin: 5px 0 22px 0;
-        border: none;
-        background: #f1f1f1;
-    }
-
-    input[type=text]:focus, input[type=password]:focus {
-        background-color: #ddd;
-        outline: none;
-    }
-
-    /* Set a style for the submit button */
-    .btn {
-        background-color: #4CAF50;
-        color: white;
-        padding: 16px 20px;
-        border: none;
-        cursor: pointer;
-        width: 100%;
-        opacity: 0.9;
-    }
-
-    .btn:hover {
-        opacity: 1;
-    }
+{% load static %}
+{% block static_files %}
+    <link rel="stylesheet" href="{% static 'crm/css/verifi_code.css' %}">
 {% endblock %}
 
 
@@ -59,14 +12,6 @@
         <div class="container">
             <h3>Restore account</h3>
 
-<!--            <label for="code"><b>verification code:</b></label>-->
-<!--            <input type="text" placeholder="Enter code from the email" name="code" required>-->
-
-<!--            <label for="new_pass"><b>new password:</b></label>-->
-<!--            <input type="password" placeholder="Enter new password" name="newpass" required>-->
-
-<!--            <label for="confirm_new_pass"><b>confirm new password:</b></label>-->
-<!--            <input type="password" placeholder="Confirm new password" name="confnewpass" required>-->
                 {{ form_new_passwd }}
             <button type="submit" class="btn">confirm</button>
         </div>

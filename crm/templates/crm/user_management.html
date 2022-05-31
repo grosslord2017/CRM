@@ -1,61 +1,9 @@
 {% extends "crm/base.html" %}
 
-{% block style%}
-    table {
-        border-collapse: collapse;
-        border-spacing: 0;
-        width: 100%;
-        border: 1px solid #ddd;
-    }
-
-    th, td {
-        text-align: left;
-        padding: 16px;
-    }
-
-    tr:nth-child(even) {
-        background-color: #f2f2f2
-    }
-
-<!--    Search     -->
-    body {
-        font-family: Arial;
-    }
-
-    * {
-        box-sizing: border-box;
-    }
-
-    form.example input[type=text] {
-        padding: 10px;
-        font-size: 17px;
-        border: 1px solid grey;
-        float: left;
-        width: 80%;
-        background: #f1f1f1;
-    }
-
-    form.example button {
-        float: left;
-        width: 20%;
-        padding: 10px;
-        background: #2196F3;
-        color: white;
-        font-size: 17px;
-        border: 1px solid grey;
-        border-left: none;
-        cursor: pointer;
-    }
-
-    form.example button:hover {
-        background: #0b7dda;
-    }
-
-    form.example::after {
-        content: "";
-        clear: both;
-        display: table;
-    }
+{% load static %}
+{% block static_files%}
+    <link rel="stylesheet" href="{% static 'crm/css/user_management.css' %}">
+    <script src="{% static 'crm/js/confirm_delete.js' %}"></script>
 {% endblock %}
 
 
@@ -106,11 +54,4 @@
         </tbody>
     </table>
 
-    <script>
-
-        function ok() {
-            return confirm('Are you sure you want to delete this user??');
-        }
-
-    </script>
 {% endblock %}

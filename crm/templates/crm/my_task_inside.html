@@ -1,38 +1,9 @@
 {% extends "crm/base.html" %}
 
-{% block style %}
-<!--    style for comments  -->
-    body {
-        margin: 0 auto;
-        max-width: 800px;
-        padding: 0 20px;
-    }
-
-    .container {
-        border: 2px solid #dedede;
-        background-color: #f1f1f1;
-        border-radius: 10px;
-        padding: 10px;
-        margin: 10px 0;
-    }
-
-    .darker {
-        border-color: #ccc;
-        background-color: #ddd;
-    }
-
-    .container::after {
-        content: "";
-        clear: both;
-        display: table;
-    }
-
-    .time-right {
-        float: right;
-        color: #aaa;
-    }
-
-
+{% load static %}
+{% block static_files %}
+    <link rel="stylesheet" href="{% static 'crm/css/my_task_inside.css' %}">
+    <script src="{% static 'crm/js/my_task_inside.js' %}"></script>
 {% endblock %}
 
 
@@ -96,27 +67,7 @@
         {% endfor %}
     </div>
 
-
     <script>
-
-        function delegateOn() {
-            var dep = document.getElementsByName('department')[0];
-            var pos = document.getElementsByName('position')[0];
-            if (document.getElementById('notMyTask').click) {
-                dep.disabled = '';
-                pos.disabled = '';
-            }
-        }
-
-        function delegateOff() {
-            var dep = document.getElementsByName('department')[0];
-            var pos = document.getElementsByName('position')[0];
-            if (document.getElementById('myCheck').click) {
-                dep.disabled = 'disabled';
-                pos.disabled = 'disabled';
-            }
-        }
-
         var positionURL = "{% url 'choice-profile' %}";
         csrfToken = '{{ csrf_token }}';
 
@@ -151,6 +102,5 @@
             }
 
         }
-
     </script>
 {% endblock %}

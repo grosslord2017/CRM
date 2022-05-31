@@ -1,80 +1,11 @@
 {% extends "crm/base.html" %}
 
-{% block style %}
-     body {
-        font-family: Arial, Helvetica, sans-serif;
-        background-color: grey;
-    }
-
-    * {
-        box-sizing: border-box;
-    }
-
-    /* Add padding to containers */
-    .container {
-        border-radius: 5px;
-        padding: 16px;
-        background-color: white;
-    }
-
-    .errorlist {
-        color: red;
-    }
-
-    input[type=text]:focus, input[type=password]:focus, input[type=email]:focus{
-        background-color: #ddd;
-        outline: none;
-    }
-
-    /* Overwrite default styles of hr */
-    hr {
-        border: 1px solid #f1f1f1;
-        margin-bottom: 25px;
-    }
-
-    /* Set a style for the submit button */
-    .registerbtn {
-        background-color: #4CAF50;
-        color: white;
-        padding: 16px 20px;
-        margin: 8px 0;
-        border: none;
-        cursor: pointer;
-        width: 100%;
-        opacity: 0.9;
-    }
-
-    .registerbtn:hover {
-        opacity: 1;
-    }
-
-    /* Add a blue text color to links */
-    a {
-        color: dodgerblue;
-    }
-
-    /* Set a grey background color and center the text of the "sign in" section */
-    .signin {
-        background-color: #f1f1f1;
-        text-align: center;
-    }
-
-    input[type=text], input[type=password], input[type=email], select, textarea {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-        margin-top: 6px;
-        margin-bottom: 16px;
-        resize: vertical;
-    }
-
+{% load static %}
+{% block static_files %}
+    <link rel="stylesheet" href="{% static 'crm/css/registration.css' %}">
 {% endblock %}
 
 {% block body %}
-<!--    <h1>Create an account</h1>-->
-<!--    <p>Please, sign up using the following form:</p>-->
     <form method="POST" id="registration">
         {% csrf_token %}
             <div class="container">
@@ -82,7 +13,6 @@
                 <p>Please fill in this form to create an account.</p>
 
                 <hr>
-<!--                тянем лейбл, вспомогательный текст, текст ошибки и само поле из форм-->
                     {% for field in user_form %}
                         <b>{{ field.label_tag }}</b>
                         {{ field.help_text }}
@@ -131,7 +61,6 @@
 
     </form>
 
-
     <script>
         var positionURL = "{% url 'choice_position' %}";
         csrfToken = '{{ csrf_token }}';
@@ -163,8 +92,6 @@
                     }
                 }
             }
-
         }
     </script>
-
 {% endblock %}
