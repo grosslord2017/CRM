@@ -3,7 +3,6 @@
 {% load static %}
 {% block static_files %}
     <link rel="stylesheet" href="{% static 'crm/css/edit_profile.css' %}">
-    <script src="{% static 'crm/js/ajax_choice_position.js' %}"></script>
 {% endblock %}
 
 
@@ -13,40 +12,40 @@
     <form method="POST">
         {% csrf_token %}
         <div class="container">
-                <hr>
-                    {% for field in user_form %}
-                        <b>{{ field.label_tag }}</b>
-                        {{ field.help_text }}
-                        {{ field.errors }}
-                        <input type="email" value="{{ field.value }}" name="{{ field.name }}" required>
-                    {% endfor %}
+            <hr>
+                {% for field in user_form %}
+                    <b>{{ field.label_tag }}</b>
+                    {{ field.help_text }}
+                    {{ field.errors }}
+                    <input type="email" value="{{ field.value }}" name="{{ field.name }}" required>
+                {% endfor %}
 
 
-                    {% for f in profile_form %}
-                        {% if f.name == 'department' %}
-                            <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
-                            <select id="department" name="{{ f.name }}">
-                                <option value="0">Выберите отдел</option>
-                                {% for d in depart %}
-                                    <option value="{{ d.id }}">{{ d }}</option>
-                                {% endfor %}
-                            </select>
-                        {% elif f.name == 'position' %}
-                            <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
-                            <select id="position" name="{{ f.name }}">
-                            </select>
-                        {% elif f.name == 'password' %}
-                            <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
-                            <input type="password" name="{{ f.name }}" required>
-                        {% else %}
-                            <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
-                            <input type="text" value="{{ f.value }}" name="{{ f.name }}" required>
-                        {% endif %}
-                    {% endfor %}
+                {% for f in profile_form %}
+                    {% if f.name == 'department' %}
+                        <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
+                        <select id="department" name="{{ f.name }}">
+                            <option value="">Выберите отдел</option>
+                            {% for d in depart %}
+                                <option value="{{ d.id }}">{{ d }}</option>
+                            {% endfor %}
+                        </select>
+                    {% elif f.name == 'position' %}
+                        <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
+                        <select id="position" name="{{ f.name }}">
+                        </select>
+                    {% elif f.name == 'password' %}
+                        <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
+                        <input type="password" name="{{ f.name }}" required>
+                    {% else %}
+                        <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
+                        <input type="text" value="{{ f.value }}" name="{{ f.name }}" required>
+                    {% endif %}
+                {% endfor %}
 
-                <hr>
+            <hr>
 
-                <button type="submit" class="editbtn">Save changes</button>
+            <button type="submit" class="editbtn">Save changes</button>
 
         </div>
 

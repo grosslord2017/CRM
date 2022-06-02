@@ -1,22 +1,21 @@
 import json
 import django.contrib.auth.hashers as hash
-from datetime import date, timedelta
+
 from random import randint
 from .sender import send_mail
 from django.db.models import Q
+from datetime import date, timedelta
 from django.contrib import messages
 from django.contrib.auth.models import Group, User
 from django.http.response import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from .models import Profile, Task, ArchiveTask, Position, Comment, VerifiCode
-from django.shortcuts import render, HttpResponseRedirect, HttpResponse, Http404
+from django.shortcuts import render, HttpResponseRedirect, Http404
 from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm,\
     CommentCreateForm, DepartmentCreateForm, PositionCreateForm, ChangePasswordForm, RestoreAccountForm,\
     CreateNewPass
 
-
-# Create your views here.
 
 def home_crm(request):
     try:
@@ -28,16 +27,12 @@ def home_crm(request):
     except:
         return render(request, 'crm/home_crm.html')
 
-# @login_required
-# def contact_crm(request):
-#     all_employees = Profile.objects.all()
-#     return render(request, 'crm/contact_crm.html', {'employees': all_employees})
-
 def user_logout(request):
     logout(request)
     return HttpResponseRedirect('/')
 
 def user_login(request):
+    # won't let me log-in again
     if request.user.is_authenticated:
         return Http404
 
@@ -60,57 +55,54 @@ def user_login(request):
         form = AutorizationForm()
     return render(request, 'crm/login.html', {'form': form})
 
-def user_registration(request):
+def create_profile(request):
     if request.user.is_authenticated:
         return Http404
 
     group = Group.objects.all()
     position = Position.objects.all()
+
     if request.method == 'POST':
-        user_form = UserRegistrationForm(request.POST)
         user_filling_form = ProfileFillingForm(request.POST)
-        if user_form.is_valid() and user_filling_form.is_valid():
+        if user_filling_form.is_valid():
+            profile = user_filling_form.cleaned_data
+            Profile.objects.create(
+                user=request.user,
+                name=profile['name'],
+                surname=profile['surname'],
+                telephone=profile['telephone'],
+                department_id=profile['department'].id,
+                position_id=profile['position'].id,
+            )
+            messages.success(request, 'Profile card created successfully!')
+            return HttpResponseRedirect('/')
 
-            if not verification_email(request.POST['email']):
-
-                profile = user_filling_form.cleaned_data
-                user = user_form.cleaned_data
-
-                if user['password'] != user['password2']:
-                    messages.error(request, 'Passwords don\'t match.')
-                    return HttpResponseRedirect('/registration/')
-
-                new_user = User.objects.create(
-                    username=user['username'].lower(),
-                    email=user['email']
-                )
-                new_user.set_password(user['password'])
-                new_user.save()
-
-                # Create a new user object but avoid saving it yet
-                # new_user = user_form.save(commit=False)
-                # new_user.set_password(user_form.cleaned_data['password'])
-                # new_user.save()
-                # create empty profile for new user (user=new_user) - привязка по id к созданому юзеру
-                # Create the user profile
-                Profile.objects.create(
-                    user=new_user,
-                    name=profile['name'],
-                    surname=profile['surname'],
-                    telephone=profile['telephone'],
-                    department_id=profile['department'].id,
-                    position_id=profile['position'].id,
-                )
-                return render(request, 'crm/registration_done.html', {'new_user': new_user})
-            else:
-                messages.error(request, 'emeil is already in use')
-    else:
-        user_form = UserRegistrationForm()
-        user_filling_form = ProfileFillingForm()
-    return render(request, 'crm/registration.html', {'user_form': user_form,
-                                                     'user_filling_form': user_filling_form,
+    user_filling_form = ProfileFillingForm()
+    return render(request, 'crm/registration_profile.html', {'user_filling_form': user_filling_form,
                                                      'group': group,
                                                      'position': position})
+
+def user_registration(request):
+    if request.user.is_authenticated:
+        return Http404
+
+    if request.method == 'POST':
+        user_form = UserRegistrationForm(request.POST)
+        if user_form.is_valid():
+            user = user_form.cleaned_data
+            if user['password'] != user['password2']:
+                messages.error(request, 'Passwords don\'t match.')
+                return HttpResponseRedirect('/registration/')
+
+            new_user = User.objects.create(
+                username=user['username'].lower(),
+                email=user['email']
+            )
+            new_user.set_password(user['password'])
+            new_user.save()
+            return render(request, 'crm/registration_done.html', {'new_user': new_user})
+    user_form = UserRegistrationForm()
+    return render(request, 'crm/registration.html', {'user_form': user_form})
 
 @login_required
 def edit_profile(request):
@@ -123,8 +115,8 @@ def edit_profile(request):
                     name=request.POST['name'],
                     surname=request.POST['surname'],
                     telephone=request.POST['telephone'],
-                    department_id=None,
-                    position_id=None,
+                    department_id=request.POST.get('department', None),
+                    position_id=request.POST.get('position', None),
                     user=request.user
                 )
             user_form.save()
@@ -168,6 +160,8 @@ def edit_profile(request):
 
 @login_required
 def task_create(request):
+    if not get_or_none(Profile, user_id=request.user.id):
+        return HttpResponseRedirect('/')
     group = Group.objects.all()
     date_today = str(date.today())
     date_future = str(date.today() + timedelta(days=365 * 2))
@@ -200,6 +194,8 @@ def task_create(request):
 
 @login_required
 def my_tasks(request):
+    if not get_or_none(Profile, user_id=request.user.id):
+        return HttpResponseRedirect('/')
     profile = Profile.objects.get(user_id=request.user.id)
     tasks = Task.objects.filter(executor_id=profile).all()
 
@@ -207,6 +203,7 @@ def my_tasks(request):
 
     return render(request, 'crm/my_tasks.html', {'tasks': tasks})
 
+# page in my task
 @login_required
 def my_task_inside(request, pk):
     task = Task.objects.get(id=pk)
@@ -270,6 +267,8 @@ def my_task_inside(request, pk):
 
 @login_required
 def supervising_tasks(request):
+    if not get_or_none(Profile, user_id=request.user.id):
+        return HttpResponseRedirect('/')
     user = request.user.id
     tasks = Task.objects.filter(task_manager_id=user).all()
     return render(request, 'crm/supervising_tasks.html', {'tasks': tasks})
@@ -331,14 +330,14 @@ def views_archive(request):
 # ajax in registration template
 def choice_position(request):
     department_id = json.loads(request.body).get('depId')
+    pos_list = []
     if department_id:
         positions = Position.objects.filter(department_fk=department_id)
-        pos_list = []
         for position in positions:
             pos_l = [position.name, position.id]
             pos_list.append(pos_l)
 
-        return JsonResponse({'pos_l': pos_list})
+    return JsonResponse({'pos_l': pos_list})
 
 # ajax in task create and delegate
 def choice_profile(request):
@@ -362,7 +361,7 @@ def choice_profile(request):
 
     return JsonResponse({'pos_p': pos_profile})
 
-# проверяем есть ли запрошеная задача у текущего пользователя
+# check if this user has a task, if not - return 404
 def task_and_user_verification(request, task, flag):
     session_user_id = request.session['_auth_user_id']
     if flag == 'my_task_inside':
@@ -376,6 +375,7 @@ def task_and_user_verification(request, task, flag):
     else:
         return
 
+# create department and position
 def create_workplace(request):
     dep = Group.objects.all()
     if request.method == 'POST':
@@ -408,9 +408,12 @@ def create_workplace(request):
                                                          'form_pos': form_pos,
                                                          'dep': dep})
 
-@login_required
 # user can change the password
+@login_required
 def change_password(request):
+    if get_or_none(User, id=request.user.id).last_name:
+        return Http404
+
     user = User.objects.get(id=request.user.id)
     if request.method == 'POST':
         form = ChangePasswordForm(request.POST)
@@ -477,6 +480,7 @@ def restore_account(request):
 
     return render(request, 'crm/restore_account.html', {'form_email': form_email})
 
+# admin can delete users and rasie up / lower down
 def user_management(request):
     all_users = Profile.objects.filter(~Q(user_id=request.user.id))
 
@@ -508,6 +512,7 @@ def user_management(request):
 
     return render(request, 'crm/user_management.html', {'all_users': all_users})
 
+# if email already used - error
 def verification_email(email):
     user_by_email = get_or_none(User, email=email)
     if user_by_email:
@@ -521,3 +526,4 @@ def get_or_none(model, *args, **kwargs):
         return model.objects.get(*args, **kwargs)
     except:
         return None
+

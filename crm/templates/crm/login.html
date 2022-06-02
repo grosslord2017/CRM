@@ -2,29 +2,45 @@
 
 {% load static %}
 {% block static_files %}
-    <link rel="stylesheet" href="{% static 'crm/css/login.css' %}" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{% static 'crm/css/login.css' %}">
 {% endblock %}
 
 {% block body%}
 
-    <form method="POST">
-        {% csrf_token %}
-        <div class="container">
-            <h1>Login</h1>
+    <div class="container">
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row">
+                <h2 style="text-align:center">Login with Social Media or Manually</h2>
+                <div class="vl">
+                    <span class="vl-innertext">or</span>
+                </div>
 
-            <label for="username"><b>Username</b></label>
-            <input type="text" placeholder="Enter username" name="username" required>
+                <div class="col">
+                    <a href="{% url 'social:begin' 'google-oauth2' %}" class="google btn"><i class="fa fa-google fa-fw">
+                        </i> Login with Google+
+                    </a>
+                </div>
 
-            <label for="password"><b>Password</b></label>
-            <input type="password" placeholder="Enter password" name="password" required>
+                <div class="col">
+                    <div class="hide-md-lg">
+                        <p>Or sign in manually:</p>
+                    </div>
+                    {{ form }}
+                    <input type="submit" value="Login">
+                </div>
+            </div>
+        </form>
+    </div>
 
-            <button type="submit" class="btn">Login</button>
-
-            <p>
-                <a href="{% url 'restore_account' %}">forgot your password?</a>
-            </p>
+    <div class="bottom-container">
+        <div class="row">
+<!--            <div class="col">-->
+                <a href="{% url 'restore_account' %}" style="color:white" class="btn">Forgot password?</a>
+<!--            </div>-->
         </div>
-    </form>
+    </div>
 
 
 {% endblock %}
