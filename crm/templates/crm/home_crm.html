@@ -7,7 +7,7 @@
 
 {% block body %}
 
-    {% if user.is_active and profile.user_id %}
+    {% if user.is_active and profile.user_id or user.is_superuser %}
         <div class="col-container">
             <div class="col left" style="background-color:#aaa;">
                 <h2>{{ profile.name }} {{ profile.surname }} {{ profile.patronymic }}</h2>
@@ -62,7 +62,7 @@
                 {% endif %}
             </div>
         </div>
-    {% elif user.is_active and not profile.user_id %}
+    {% elif user.is_active and not profile.user_id and not user.is_superuser %}
         <h1>You must fill out a <a href="{% url 'create_profile' %}">profile card</a></h1>
     {% else %}
         <h1>user not logined</h1>

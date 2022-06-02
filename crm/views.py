@@ -56,8 +56,11 @@ def user_login(request):
     return render(request, 'crm/login.html', {'form': form})
 
 def create_profile(request):
-    if request.user.is_authenticated:
+    try:
+        profil_card = request.user.profile
         return Http404
+    except:
+        None
 
     group = Group.objects.all()
     position = Position.objects.all()
