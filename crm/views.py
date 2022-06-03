@@ -11,7 +11,7 @@ from django.http.response import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from .models import Profile, Task, ArchiveTask, Position, Comment, VerifiCode
-from django.shortcuts import render, HttpResponseRedirect, Http404
+from django.shortcuts import render, HttpResponseRedirect, Http404, HttpResponse
 from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm,\
     CommentCreateForm, DepartmentCreateForm, PositionCreateForm, ChangePasswordForm, RestoreAccountForm,\
     CreateNewPass
@@ -164,6 +164,7 @@ def edit_profile(request):
 @login_required
 def task_create(request):
     if not get_or_none(Profile, user_id=request.user.id):
+        messages.error(request, 'You don\'t have profile.')
         return HttpResponseRedirect('/')
     group = Group.objects.all()
     date_today = str(date.today())
@@ -281,7 +282,7 @@ def supervising_task_inside(request, pk):
     task = Task.objects.get(id=pk)
     comment_form = CommentCreateForm()
     if request.method == 'POST':
-        # block create comment
+        # block check to complete
         if request.POST.get('status', False):
             task_manager = Profile.objects.get(id=task.executor_id)
             archive = ArchiveTask.objects.create(
@@ -289,12 +290,15 @@ def supervising_task_inside(request, pk):
                 subject=task.subject,
                 task_manager=task.task_manager.profile.surname,
                 executor=task_manager.surname,
-                description=task.description
+                task_id=task.id
             )
             archive.save()
-            task.delete()
+            task.status_completed = True
+            task.save()
+            # task.delete()
             return HttpResponseRedirect(f'/supervising_tasks/')
 
+        # block create comment
         comment_form = CommentCreateForm(request.POST)
         if comment_form.is_valid():
             comment = comment_form.cleaned_data
@@ -530,3 +534,11 @@ def get_or_none(model, *args, **kwargs):
     except:
         return None
 
+@login_required
+def views_completed_task(request, pk):
+    archive_task = ArchiveTask.objects.get(id=pk)
+    task = Task.objects.get(id=archive_task.task_id)
+    comments = Comment.objects.filter(task_fk_id=archive_task.task_id)[::-1]
+
+    return render(request, 'crm/view_task_in_archive.html', {'task': task, 'comments': comments,
+                                                             'archive_task': archive_task})

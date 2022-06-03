@@ -19,6 +19,7 @@ urlpatterns = [
     path('supervising_tasks/', views.supervising_tasks, name='supervising_tasks'),
     path('supervising_tasks/<int:pk>/', views.supervising_task_inside, name='supervising_task_inside'),
     path('archive/', views.views_archive, name='archive'),
+    path('completed_task/<int:pk>/', views.views_completed_task, name='completed_task'),
     path('choice_position', views.choice_position, name='choice_position'),
     path('choice_profile', views.choice_profile, name='choice_profile'),
     path('create_workplace/', views.create_workplace, name='create_workplace'),

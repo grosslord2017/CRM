@@ -10,24 +10,33 @@
     {% if user.is_active and profile.user_id or user.is_superuser %}
         <div class="col-container">
             <div class="col left" style="background-color:#aaa;">
-                <h2>{{ profile.name }} {{ profile.surname }} {{ profile.patronymic }}</h2>
-                <p>
-                    <a href="{% url 'my_tasks' %}">Задачи поставленные мне</a>
-                </p>
-                <p>
-                    <a href="{% url 'supervising_tasks' %}">Мной поставленные задачи</a>
-                </p>
-                <p>
-                    <a href="{% url 'task_form' %}">Поставить задачу</a>
-                </p>
-                <p>
-                    <a href="{% url 'edit_profile' %}">Редактировать профиль</a>
-                </p>
-                {% if not user.last_name %}
+
+                {% if profile %}
+
+                    <h2>{{ profile.name }} {{ profile.surname }} {{ profile.patronymic }}</h2>
                     <p>
-                        <a href="{% url 'change_password' %}">Сменить пароль</a>
+                        <a href="{% url 'my_tasks' %}">Задачи поставленные мне</a>
+                    </p>
+                    <p>
+                        <a href="{% url 'supervising_tasks' %}">Мной поставленные задачи</a>
+                    </p>
+                    <p>
+                        <a href="{% url 'task_form' %}">Поставить задачу</a>
+                    </p>
+                    <p>
+                        <a href="{% url 'edit_profile' %}">Редактировать профиль</a>
+                    </p>
+                    {% if not user.last_name %}
+                        <p>
+                            <a href="{% url 'change_password' %}">Сменить пароль</a>
+                        </p>
+                    {% endif %}
+                {% else %}
+                    <p>
+                        <a href="{% url 'create_profile' %}">Создать профиль</a>
                     </p>
                 {% endif %}
+
 
                 {% if user.is_superuser %}
                     <p>

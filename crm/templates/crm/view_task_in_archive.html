@@ -1,0 +1,37 @@
+{% extends "crm/base.html" %}
+
+{% load static %}
+{% block static_files %}
+    <link rel="stylesheet" href="{% static 'crm/css/my_task_inside.css' %}">
+{% endblock %}
+
+
+{% block body %}
+<!--    button return back-->
+    <button><a href="{% url 'archive' %}">back to archive</a></button>
+
+
+    <div id="task">
+        <h2>{{ task.subject }}</h2>
+        <h3>От: {{ task.task_manager.profile.surname }} -----> Кому: {{ task.executor.surname }}</h3>
+        <p>Start_date: {{ task.date_create }}</p>
+        <p>Finish_date: {{ task.final_date }}</p>
+        <p>Completed_date: {{ archive_task.date_complete }}</p>
+        <br>
+        Description:
+        <p>{{ task.description|linebreaks }}</p>
+    </div>
+
+<!--   output Comments    -->
+    <br>
+    <div id="block_comment">
+        {% for comment in comments %}
+            <div class="container">
+                <h4>{{ comment.author.name }} {{ comment.author.surname }}</h4>
+                <p>{{ comment.text|linebreaks }}</p>
+                <span class="time-right">{{ comment.date }}</span>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

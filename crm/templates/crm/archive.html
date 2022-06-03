@@ -24,17 +24,15 @@
                 <th>Тема</th>
                 <th>Постановщик</th>
                 <th>Исполнитель</th>
-                <th>Описание</th>
                 <th>Дата завершения</th>
             </tr>
 
             {% for record in archive %}
                 <tr>
                     <th>{{ record.date_create }}</th>
-                    <th>{{ record.subject }}</th>
+                    <th><a href="{% url 'completed_task' pk=record.id %}">{{ record.subject }}</a></th>
                     <th>{{ record.task_manager }}</th>
                     <th>{{ record.executor }}</th>
-                    <th>{{ record.description }}</th>
                     <th>{{ record.date_complete }}</th>
                 </tr>
             {% endfor %}

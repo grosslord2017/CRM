@@ -48,7 +48,7 @@ class ArchiveTask(models.Model):
     subject = models.CharField(max_length=150)
     task_manager = models.CharField(max_length=150)
     executor = models.CharField(max_length=150)
-    description = models.CharField(max_length=1000)
+    task = models.OneToOneField(Task, on_delete=models.CASCADE)
 
 class VerifiCode(models.Model):
 
