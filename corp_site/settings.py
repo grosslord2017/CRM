@@ -32,6 +32,11 @@ except ImportError:
     AWS_STORAGE_BUCKET_NAME = str(os.getenv("S3_BUCKET_NAME"))
     S3_UPLOAD_DIRECTORY = str(os.getenv("S3_UPLOAD_DIRECTORY"))
 
+    # google
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = str(os.getenv("GOOGLE_OAUTH2_KEY"))
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = str(os.getenv("GOOGLE_OAUTH2_SECRET"))
+
+
     # Database
     # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
     DATABASES = {
@@ -166,8 +171,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # block google auth
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '94939356186-c2tqni22q15kgt7d2s93vjs07hu5u6pc.apps.googleusercontent.com'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
+# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '94939356186-c2tqni22q15kgt7d2s93vjs07hu5u6pc.apps.googleusercontent.com'
+# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
