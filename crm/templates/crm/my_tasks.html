@@ -25,19 +25,21 @@
 
             <tbody>
             {% for task in tasks %}
-                <tr>
-                    <th>{{ task.date_create }}</th>
-                    <th>
-                        <a href="{% url 'my_task_inside' pk=task.id %}">{{ task.subject }}</a>
-                    </th>
-                    <th>{{ task.task_manager.profile.surname }} {{ task.task_manager.profile.name }}</th>
-                    {% if task.status_completed == 1 %}
-                        <th class="completed">Completed</th>
-                    {% else %}
-                        <th class="not_completed">NOT Completed</th>
-                    {% endif %}
-                    <th>{{ task.final_date }}</th>
-                </tr>
+                {% if task.archived == False %}
+                    <tr>
+                        <th>{{ task.date_create }}</th>
+                        <th>
+                            <a href="{% url 'my_task_inside' pk=task.id %}">{{ task.subject }}</a>
+                        </th>
+                        <th>{{ task.task_manager.profile.surname }} {{ task.task_manager.profile.name }}</th>
+                        {% if task.status_completed == 1 %}
+                            <th class="completed">Completed</th>
+                        {% else %}
+                            <th class="not_completed">NOT Completed</th>
+                        {% endif %}
+                        <th>{{ task.final_date }}</th>
+                    </tr>
+                {% endif %}
             {% endfor %}
             </tbody>
 

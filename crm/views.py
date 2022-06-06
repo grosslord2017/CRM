@@ -1,13 +1,14 @@
+import re
 import json
 import django.contrib.auth.hashers as hash
 
 from random import randint
 from .sender import send_mail
 from django.db.models import Q
-from datetime import date, timedelta
 from django.contrib import messages
-from django.contrib.auth.models import Group, User
+from datetime import date, timedelta
 from django.http.response import JsonResponse
+from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from .models import Profile, Task, ArchiveTask, Position, Comment, VerifiCode
@@ -203,8 +204,6 @@ def my_tasks(request):
     profile = Profile.objects.get(user_id=request.user.id)
     tasks = Task.objects.filter(executor_id=profile).all()
 
-    # подумать как вытащить дату завершения таска и прописать ее на странице my_task
-
     return render(request, 'crm/my_tasks.html', {'tasks': tasks})
 
 # page in my task
@@ -294,6 +293,7 @@ def supervising_task_inside(request, pk):
             )
             archive.save()
             task.status_completed = True
+            task.archived = True
             task.save()
             # task.delete()
             return HttpResponseRedirect(f'/supervising_tasks/')
@@ -333,6 +333,18 @@ def views_archive(request):
         return render(request, 'crm/archive.html', {'archive': archive})
     else:
         raise Http404
+
+@login_required
+def views_completed_task(request, pk):
+    if not request.user.is_superuser:
+        return Http404
+
+    archive_task = ArchiveTask.objects.get(id=pk)
+    task = Task.objects.get(id=archive_task.task_id)
+    comments = Comment.objects.filter(task_fk_id=archive_task.task_id)[::-1]
+
+    return render(request, 'crm/view_task_in_archive.html', {'task': task, 'comments': comments,
+                                                             'archive_task': archive_task})
 
 # ajax in registration template
 def choice_position(request):
@@ -534,11 +546,11 @@ def get_or_none(model, *args, **kwargs):
     except:
         return None
 
-@login_required
-def views_completed_task(request, pk):
-    archive_task = ArchiveTask.objects.get(id=pk)
-    task = Task.objects.get(id=archive_task.task_id)
-    comments = Comment.objects.filter(task_fk_id=archive_task.task_id)[::-1]
+def password_security_check(passwd):
+    if len(passwd) < 8:
+        messages = 'Password is to short!'
+    elif re.search(r'[a-z]', passwd) and re.search(r'[A-Z]', passwd) and re.search(r'\d', passwd) and not re.search(r'\s', passwd):
+        messages = ''
 
-    return render(request, 'crm/view_task_in_archive.html', {'task': task, 'comments': comments,
-                                                             'archive_task': archive_task})
+
+

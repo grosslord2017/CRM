@@ -31,6 +31,7 @@ class Task(models.Model):
     final_date = models.DateField()
     description = models.CharField(max_length=1000)
     status_completed = models.BooleanField(default=False)
+    archived = models.BooleanField(default=False)
     task_manager = models.ForeignKey(User, on_delete=models.CASCADE)
     executor = models.ForeignKey(Profile, on_delete=models.CASCADE, default=None)
 
