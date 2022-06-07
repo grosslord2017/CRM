@@ -38,3 +38,9 @@ body {
 .topnav-right {
     float: right;
 }
+
+.img-background {
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+}

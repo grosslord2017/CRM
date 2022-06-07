@@ -7,9 +7,12 @@
 
     {% load static %}
     <link rel="stylesheet" href="{% static 'crm/css/base.css' %}" type="text/css">
+<!--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">-->
+
     {% block static_files %} {% endblock %}
+
 </head>
-<body>
+<body class="img-background" style="background: url({% static 'crm/img/1.jpg' %})">
     <div class="topnav">
         <a class="active" href="{% url 'home_crm' %}">Home</a>
         <div class="topnav-right">

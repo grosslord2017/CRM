@@ -3,3 +3,4 @@ __pycache__/
 db.sqlite3
 corp_site/local_settings.py
 test.py
+test.html

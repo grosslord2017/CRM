@@ -493,15 +493,18 @@ def restore_account(request):
             if confirm:
                 user = User.objects.get(username=confirm.user_login)
                 if form['new_passwd'] == form['confirm_passwd']:
-                    user.set_password(form['confirm_passwd'])
-                    user.save()
-                    VerifiCode.objects.filter(user_login=user.username).delete()
-                    messages.success(request, 'new password has been set')
-                    return HttpResponseRedirect('/')
+                    if password_security_check(form['new_passwd']):
+                        user.set_password(form['confirm_passwd'])
+                        user.save()
+                        VerifiCode.objects.filter(user_login=user.username).delete()
+                        messages.success(request, 'new password has been set')
+                        return HttpResponseRedirect('/')
+                    else:
+                        messages.error(request, 'Not strong password.')
                 else:
-                    messages.error(request, 'passwords do not match')
+                    messages.error(request, 'Passwords do not match')
             else:
-                messages.error(request, 'code doesn\'t work')
+                messages.error(request, 'Code doesn\'t work')
 
             form_new_passwd = CreateNewPass()
             return render(request, 'crm/verification_code.html', {'form_new_passwd': form_new_passwd})
@@ -570,9 +573,6 @@ def password_security_check(passwd):
 
 # попробовать добавить проверку на {8, } - минимум символов
     if re.search(r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{8,}', passwd):
-        mes = 'Password has been set'
-        return (True, mes)
+        return True
     else:
-        mes = 'Password must be at least 8 characters long, ' \
-              'contain uppercase and lowercase characters, and contain numbers'
-        return (False, mes)
+        return False
