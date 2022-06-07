@@ -98,6 +98,12 @@ def user_registration(request):
                 messages.error(request, 'Passwords don\'t match.')
                 return HttpResponseRedirect('/registration/')
 
+            if not password_security_check(user['password']):
+                mes = 'Password must be at least 8 characters long, ' \
+                      'contain uppercase and lowercase characters, and contain numbers'
+                messages.error(request, mes)
+                return HttpResponseRedirect('/registration/')
+
             new_user = User.objects.create(
                 username=user['username'].lower(),
                 email=user['email']
@@ -436,12 +442,17 @@ def change_password(request):
     user = User.objects.get(id=request.user.id)
     if request.method == 'POST':
         form = ChangePasswordForm(request.POST)
-        if form.is_valid:
-            if hash.check_password(request.POST['old_password'], user.password):
-                if request.POST['new_password'] == request.POST['confirm_password']:
-                    user.set_password(request.POST['confirm_password'])
-                    user.save()
-                    return render(request, 'crm/change_user_pass_done.html')
+        if form.is_valid():
+            pas_form = form.cleaned_data
+            if hash.check_password(pas_form['old_password'], user.password):
+                if pas_form['new_password'] == pas_form['confirm_password']:
+                    if password_security_check(pas_form['new_password']):
+                        user.set_password(pas_form['confirm_password'])
+                        user.save()
+                        return render(request, 'crm/change_user_pass_done.html')
+                    else:
+                        mes = 'Not strong password.'
+                        messages.error(request, mes)
                 else:
                     messages.error(request, 'new password and confirm password do not match')
             else:
@@ -547,10 +558,21 @@ def get_or_none(model, *args, **kwargs):
         return None
 
 def password_security_check(passwd):
-    if len(passwd) < 8:
-        messages = 'Password is to short!'
-    elif re.search(r'[a-z]', passwd) and re.search(r'[A-Z]', passwd) and re.search(r'\d', passwd) and not re.search(r'\s', passwd):
-        messages = ''
+    # if len(passwd) < 8:
+    #     message = 'Password is to short! Must be at least 8 characters'
+    #     return (False, message)
+    # elif re.search(r'[a-z]', passwd) and re.search(r'[A-Z]', passwd) and \
+    #         re.search(r'\d', passwd) and not re.search(r'\s', passwd):
+    #     return True
+    # else:
+    #     message = 'Password must have large and small characters, and a number.'
+    #     return (False, message)
 
-
-
+# попробовать добавить проверку на {8, } - минимум символов
+    if re.search(r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{8,}', passwd):
+        mes = 'Password has been set'
+        return (True, mes)
+    else:
+        mes = 'Password must be at least 8 characters long, ' \
+              'contain uppercase and lowercase characters, and contain numbers'
+        return (False, mes)
