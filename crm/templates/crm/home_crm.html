@@ -8,7 +8,7 @@
 {% block body %}
     {% if user.is_active and profile.user_id or user.is_superuser %}
         <div class="col-container">
-            <div class="col left" style="background-color:#aaa;">
+            <div class="col left">
 
                 {% if profile %}
 
@@ -49,7 +49,7 @@
                     </p>
                 {% endif %}
             </div>
-            <div class="col right" style="background-color:#bbb;">
+            <div class="col right">
                 <h3>Top hot tasks:</h3>
                 {% if not user_hot_task %}
                     <h2>Congratulations, you don't have tasks</h2>
@@ -64,7 +64,7 @@
                                 </a>
                             </p>
                             <p>{{ hot_task.description|linebreaks }}</p>
-                            <hr>
+
                         </div>
                     {% endfor %}
                 {% endif %}

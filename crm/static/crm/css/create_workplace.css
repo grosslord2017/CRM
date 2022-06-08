@@ -62,7 +62,10 @@ body {
 .container {
     border-radius: 5px;
     padding: 16px;
+    width: 600px;
     background-color: white;
+    margin-left: auto;
+    margin-right: auto;
 }
 
  input[type=text], select {
@@ -74,6 +77,7 @@ body {
     margin-top: 6px;
     margin-bottom: 16px;
     resize: vertical;
+    background: #bcd6ed;
 }
 
  * {

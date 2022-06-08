@@ -7,11 +7,12 @@
 
 
 {% block body %}
-    <h1>Edit your account</h1>
-    <p>You can edit your account using the following form:</p>
+
     <form method="POST">
         {% csrf_token %}
         <div class="container">
+            <h1>Edit your account</h1>
+            <p>You can edit your account using the following form:</p>
             <hr>
                 {% for field in user_form %}
                     <b>{{ field.label_tag }}</b>

@@ -12,32 +12,34 @@
     {% block static_files %} {% endblock %}
 
 </head>
-<body class="img-background" style="background: url({% static 'crm/img/1.jpg' %})">
-    <div class="topnav">
-        <a class="active" href="{% url 'home_crm' %}">Home</a>
-        <div class="topnav-right">
-            {% if user.is_authenticated %}
-                <a href="{% url 'logout' %}">Logout</a>
-            {% else %}
-                <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'registration' %}">Registration</a>
-            {% endif %}
+<body class="img-background" style="background: url({% static 'crm/img/base.jpg' %}) center no-repeat fixed;">
+<!--    <div class="img-background" style="background: url({% static 'crm/img/base.jpg' %}) center no-repeat fixed;">-->
+        <div class="topnav">
+            <a class="active" href="{% url 'home_crm' %}">Home</a>
+            <div class="topnav-right">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'registration' %}">Registration</a>
+                {% endif %}
+            </div>
         </div>
-    </div>
 
-    {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li class="{{ message.tags }}">
-                    {{ message|safe }}
-<!--                    <a href="{% url 'home_crm' %}" class="close">✖</a>-->
-                    <a href="" class="close">✖</a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">
+                        {{ message|safe }}
+    <!--                    <a href="{% url 'home_crm' %}" class="close">✖</a>-->
+                        <a href="" class="close">✖</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
 
-    {% block body %}
-    {% endblock %}
+        {% block body %}
+        {% endblock %}
+<!--    </div>-->
 </body>
 </html>

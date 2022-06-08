@@ -18,7 +18,6 @@
         <div id="Department" class="tabcontent">
             <form method="POST">
                 {% csrf_token %}
-<!--                <label for="id_name">Department:</label>-->
                 <label for="id_name">Department:</label>
                 {{ form_dep.name }}
                 <button type="submit" class="createbtn">create</button>

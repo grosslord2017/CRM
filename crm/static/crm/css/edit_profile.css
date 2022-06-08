@@ -11,7 +11,10 @@
 .container {
     border-radius: 5px;
     padding: 16px;
-    background-color: white;
+    /*background-color: white;*/
+    margin-left: auto;
+    margin-right: auto;
+    width: 600px;
 }
 
 .errorlist {
@@ -65,4 +68,5 @@ input[type=text], input[type=password], input[type=email], select, textarea {
     margin-top: 6px;
     margin-bottom: 16px;
     resize: vertical;
+    background: #bcd6ed;
 }
