@@ -2,23 +2,81 @@
 
 {% load static %}
 {% block static_files %}
-    <link rel="stylesheet" href="{% static 'crm/css/my_task_inside.css' %}">
-    <script src="{% static 'crm/js/my_task_inside.js' %}"></script>
+<!--    <link rel="stylesheet" href="{% static 'crm/css/my_task_inside.css' %}">-->
+<script src="{% static 'crm/js/my_task_inside.js' %}" xmlns="http://www.w3.org/1999/html"></script>
+
+    <style>
+
+        <!--   style for btn     -->
+
+        .btn {
+            margin-left: 80px;
+        }
+
+        a {
+            text-decoration: none;
+            display: inline-block;
+            padding: 8px 16px;
+            background:
+        }
+
+        a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .previous {
+            background-color: #001e9f;
+            color: white;
+        }
+
+        <!--   style for task_info  -->
+
+        .task_info {
+            margin-left: 50px;
+        }
+
+
+        <!--    style for comments  -->
+
+        .container {
+            border: 2px solid #dedede;
+            background-color: #4B765F;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .container::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        .time-right {
+            float: right;
+            color: #aaa;
+        }
+    </style>
+
 {% endblock %}
 
 
 {% block body %}
 <!--    button return back-->
-    <button><a href="{% url 'my_tasks' %}">back to my tasks</a></button>
 
-    <h1>{{ task.subject }}</h1>
-    <div>
+    <div class="btn">
+        <a class="previous" href="{% url 'my_tasks' %}"><< back to my tasks</a>
+    </div>
+
+    <div class="task_info">
+        <h1>{{ task.subject }}</h1>
         <p>{{ task.final_date }}</p>
         <p>{{ task.description|linebreaks }}</p>
     </div>
 
 <!--    check-box completed     -->
-    <div>
+    <div class="complete">
         <form name="{{ task.id }}" id="taskId" method="POST">
         {% csrf_token %}
             <p>
@@ -42,6 +100,7 @@
 
         </form>
     </div>
+
 
 <!--    create Comment    -->
     <br>
