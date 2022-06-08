@@ -7,7 +7,7 @@ class MailSender(object):
     def __init__(self, to, subject, body):
         self.msg = MIMEMultipart("alternative")
         self.email = "corpcrm.info@gmail.com"
-        self.password = "9379992crm"
+        self.password = "zfxctqdcqkqvtgku"
         self.sent_from = self.email
         self.to = to
         self.subject = subject
