@@ -26,7 +26,7 @@
                     {% if f.name == 'department' %}
                         <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
                         <select id="department" name="{{ f.name }}">
-                            <option value="">Выберите отдел</option>
+                            <option value="">Choose your department</option>
                             {% for d in depart %}
                                 <option value="{{ d.id }}">{{ d }}</option>
                             {% endfor %}

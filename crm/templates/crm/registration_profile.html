@@ -19,7 +19,7 @@
 
                             <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
                             <select id="department" name="{{ f.name }}" required>
-                                <option value="0">Выберите отдел</option>
+                                <option value="0">Choose your department</option>
                                 {% for g in group %}
                                     <option value="{{ g.id }}">{{ g.name }}</option>
                                 {% endfor %}

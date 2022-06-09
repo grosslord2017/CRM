@@ -2,27 +2,35 @@
 
 {% load static %}
 {% block static_files %}
-    <link rel="stylesheet" href="{% static 'crm/css/supervising_task_inside.css' %}">
+    <link rel="stylesheet" href="{% static 'crm/css/my_task_inside.css' %}">
     <script src="{% static 'crm/js/activate_confirm.js' %}"></script>
 {% endblock %}
 
 
 {% block body %}
-    <button><a href="{% url 'supervising_tasks' %}">back to tasks</a></button>
+    <div class="btn">
+        <p>
+            <a class="previous" href="{% url 'supervising_tasks' %}">back to tasks</a></button>
+        </p>
+    </div>
 
-    <h1>{{ task.subject }}</h1>
-    <div>
+    <div class="task_info">
+        <h1>{{ task.subject }}</h1>
         <p>{{ task.final_date }}</p>
         <p>{{ task.description|linebreaks }}</p>
     </div>
 
-    <div>
+    <hr>
+
+    <div class="complete">
         <form method="POST">
         {% csrf_token %}
             <p>
                 Сonfirm сompleted: <input type="checkbox" id="myCheck" name="status" onclick="Go()" >
             </p>
-            <input disabled name="complete" type="submit" value="Завершить">
+            <p>
+                <input disabled name="complete" type="submit" value="Завершить">
+            </p>
         </form>
     </div>
 

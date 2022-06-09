@@ -8,15 +8,20 @@
 
 {% block body %}
 <!--    button return back-->
-    <button><a href="{% url 'archive' %}">back to archive</a></button>
+    <div class="btn">
+        <p>
+            <a class="previous" href="{% url 'archive' %}"><< back to archive</a>
+        </p>
+    </div>
 
-
-    <div id="task">
+    <div id="task" class="task_info">
         <h2>{{ task.subject }}</h2>
-        <h3>От: {{ task.task_manager.profile.surname }} -----> Кому: {{ task.executor.surname }}</h3>
-        <p>Start_date: {{ task.date_create }}</p>
-        <p>Finish_date: {{ task.final_date }}</p>
-        <p>Completed_date: {{ archive_task.date_complete }}</p>
+        <h3>from: {{ task.task_manager.profile.surname }} -----> to: {{ task.executor.surname }}</h3>
+        <div class="date_info">
+            <p>Start date: {{ task.date_create }}</p>
+            <p>Final date: {{ task.final_date }}</p>
+            <p>Finish date: {{ archive_task.date_complete }}</p>
+        </div>
         <br>
         Description:
         <p>{{ task.description|linebreaks }}</p>

@@ -14,43 +14,43 @@
 
                     <h2>{{ profile.name }} {{ profile.surname }} {{ profile.patronymic }}</h2>
                     <p>
-                        <a href="{% url 'my_tasks' %}">Задачи поставленные мне</a>
+                        <a href="{% url 'my_tasks' %}">My tasks</a>
                     </p>
                     <p>
-                        <a href="{% url 'supervising_tasks' %}">Мной поставленные задачи</a>
+                        <a href="{% url 'supervising_tasks' %}">Tasks assigned by me</a>
                     </p>
                     <p>
-                        <a href="{% url 'task_form' %}">Поставить задачу</a>
+                        <a href="{% url 'task_form' %}">Assign a task</a>
                     </p>
                     <p>
-                        <a href="{% url 'edit_profile' %}">Редактировать профиль</a>
+                        <a href="{% url 'edit_profile' %}">Edit profile</a>
                     </p>
                     {% if not user.last_name %}
                         <p>
-                            <a href="{% url 'change_password' %}">Сменить пароль</a>
+                            <a href="{% url 'change_password' %}">Change password</a>
                         </p>
                     {% endif %}
                 {% else %}
                     <p>
-                        <a href="{% url 'create_profile' %}">Создать профиль</a>
+                        <a href="{% url 'create_profile' %}">Create a profile</a>
                     </p>
                 {% endif %}
 
 
                 {% if user.is_superuser %}
                     <p>
-                        <a href="{% url 'archive' %}">Архив</a>
+                        <a href="{% url 'archive' %}">Archive</a>
                     </p>
                     <p>
-                        <a href="{% url 'create_workplace' %}">отделы и должности</a>
+                        <a href="{% url 'create_workplace' %}">Department & Job title</a>
                     </p>
                     <p>
-                        <a href="{% url 'user_management' %}">управление пользователями</a>
+                        <a href="{% url 'user_management' %}">User management</a>
                     </p>
                 {% endif %}
             </div>
             <div class="col right">
-                <h3>Top hot tasks:</h3>
+                <h3>Urgent tasks:</h3>
                 {% if not user_hot_task %}
                     <h2>Congratulations, you don't have tasks</h2>
                 {% else %}
