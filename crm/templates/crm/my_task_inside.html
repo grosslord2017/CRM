@@ -3,21 +3,13 @@
 {% load static %}
 {% block static_files %}
 <!--    <link rel="stylesheet" href="{% static 'crm/css/my_task_inside.css' %}">-->
-<script src="{% static 'crm/js/my_task_inside.js' %}" xmlns="http://www.w3.org/1999/html"></script>
+    <script src="{% static 'crm/js/my_task_inside.js' %}"></script>
 
     <style>
 
         <!--   style for btn     -->
-
-        .btn {
-            margin-left: 80px;
-        }
-
         a {
             text-decoration: none;
-            display: inline-block;
-            padding: 8px 16px;
-            background:
         }
 
         a:hover {
@@ -28,12 +20,16 @@
         .previous {
             background-color: #001e9f;
             color: white;
+            margin-left: 10px;
+            margin-top: 10px;
+            padding: 8px 16px;
+
         }
 
         <!--   style for task_info  -->
 
         .task_info {
-            margin-left: 50px;
+            padding-left: 50px;
         }
 
 
@@ -66,7 +62,9 @@
 <!--    button return back-->
 
     <div class="btn">
-        <a class="previous" href="{% url 'my_tasks' %}"><< back to my tasks</a>
+        <p>
+            <a class="previous" href="{% url 'my_tasks' %}"><< back to my tasks</a>
+        </p>
     </div>
 
     <div class="task_info">

@@ -36,6 +36,8 @@ except ImportError:
     SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = str(os.getenv("GOOGLE_OAUTH2_KEY"))
     SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = str(os.getenv("GOOGLE_OAUTH2_SECRET"))
 
+    EMAIL_PASSWORD = str(os.getenv("GOOGLE_PASSWD"))
+
 
     # Database
     # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

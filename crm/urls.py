@@ -3,7 +3,6 @@ from . import views
 
 urlpatterns = [
     path('', views.home_crm, name='home_crm'),
-    # path('contact/', views.contact_crm, name='contact_crm'),
 
     path('login-google/', include('social_django.urls', namespace='social')), #google
     # path('logout-google/', views.logout, {'next_page': settings.LOGOUT_REDIRECT_URL}, name='logout'),
