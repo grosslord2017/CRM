@@ -545,10 +545,13 @@ def user_management(request):
                                             Q(user_id__email__icontains=search)).exclude(Q(user_id=request.user.id))
 
         elif request.POST.get('change_mail', False):
-            mail, user_id = request.POST['change_mail'].split(',')
-            user = User.objects.get(id=user_id)
-            user.email = mail
-            user.save()
+            try:
+                mail, user_id = request.POST['change_mail'].split(',')
+                user = User.objects.get(id=user_id)
+                user.email = mail
+                user.save()
+            except:
+                pass
 
     return render(request, 'crm/user_management.html', {'all_users': all_users})
 

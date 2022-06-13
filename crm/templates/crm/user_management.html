@@ -33,10 +33,11 @@
             {% for user in all_users %}
                 <tr id="{{ user.id }}">
                     <td>{{ user.name }} {{ user.surname }}</td>
-                    <td>{{ user.user.email }}
+                    <td class="mail">
                         <form method="POST">
                             {% csrf_token %}
-                            <button name="change_mail" value="{{ user.user.email }}"
+                                {{ user.user.email }}
+                                <button name="change_mail" value="{{ user.user.email }}"
                                     onclick="return mail({{ user.id }})">edit</button>
                         </form>
                     </td>
@@ -47,7 +48,7 @@
                     <td>
                         <form method="POST">
                         {% csrf_token %}
-                            <button name="delete" value="{{ user.user }}" onclick="return ok()">delete</button> |
+                            <button name="delete" value="{{ user.user }}" onclick="return ok()">delete</button>
                             {% if user.user.is_superuser %}
                                 <button name="permission" value="{{ user.user }}">down to user</button>
                             {% else %}
