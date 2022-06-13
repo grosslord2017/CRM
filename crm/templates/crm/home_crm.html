@@ -73,7 +73,12 @@
     {% elif user.is_active and not profile.user_id and not user.is_superuser %}
         <h1>You must fill out a <a href="{% url 'create_profile' %}">profile card</a></h1>
     {% else %}
-        <h1>user not logined</h1>
+        <div class="info">
+            <h1>user not logined</h1>
+        </div>
+        <div class="logo">
+            <h1> YOUR LOGO </h1>
+        </div>
     {% endif %}
 
 {% endblock %}

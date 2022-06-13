@@ -23,3 +23,14 @@
 .hot {
     color: red;
 }
+
+.info {
+    text-align: center;
+    margin-top: 5%;
+}
+
+.logo {
+    text-align: center;
+    margin-top: 15%;
+    font-size: 200%;
+}

@@ -3,7 +3,7 @@
 {% load static %}
 {% block static_files%}
     <link rel="stylesheet" href="{% static 'crm/css/user_management.css' %}">
-    <script src="{% static 'crm/js/confirm_delete.js' %}"></script>
+    <script src="{% static 'crm/js/confirm_delete_and_change.js' %}"></script>
 {% endblock %}
 
 
@@ -31,25 +31,31 @@
         </thead>
         <tbody>
             {% for user in all_users %}
-                    <tr id="{{ user.id }}">
-                        <td>{{ user.name }} {{ user.surname }}</td>
-                        <td>{{ user.user.email }}</td>
-                        <td>{{ user.telephone }}</td>
-                        <td>{{ user.user }}</td>
-                        <td>{{ user.department }}</td>
-                        <td>{{ user.position.name }}</td>
-                        <td>
-                            <form method="POST">
+                <tr id="{{ user.id }}">
+                    <td>{{ user.name }} {{ user.surname }}</td>
+                    <td>{{ user.user.email }}
+                        <form method="POST">
                             {% csrf_token %}
-                                <button name="delete" value="{{ user.user }}" onclick="return ok()">delete</button> |
-                                {% if user.user.is_superuser %}
-                                    <button name="permission" value="{{ user.user }}">down to user</button>
-                                {% else %}
-                                    <button name="permission" value="{{ user.user }}">up to admin</button>
-                                {% endif %}
-                            </form>
-                        </td>
-                    </tr>
+                            <button name="change_mail" value="{{ user.user.email }}"
+                                    onclick="return mail({{ user.id }})">edit</button>
+                        </form>
+                    </td>
+                    <td>{{ user.telephone }}</td>
+                    <td>{{ user.user }}</td>
+                    <td>{{ user.department }}</td>
+                    <td>{{ user.position.name }}</td>
+                    <td>
+                        <form method="POST">
+                        {% csrf_token %}
+                            <button name="delete" value="{{ user.user }}" onclick="return ok()">delete</button> |
+                            {% if user.user.is_superuser %}
+                                <button name="permission" value="{{ user.user }}">down to user</button>
+                            {% else %}
+                                <button name="permission" value="{{ user.user }}">up to admin</button>
+                            {% endif %}
+                        </form>
+                    </td>
+                </tr>
             {% endfor %}
         </tbody>
     </table>

@@ -518,6 +518,7 @@ def user_management(request):
     all_users = Profile.objects.filter(~Q(user_id=request.user.id))
 
     if request.method == 'POST':
+        # print(request.POST)
 
         if request.POST.get('delete', False) or request.POST.get('permission', False):
             try:
@@ -542,6 +543,12 @@ def user_management(request):
                                             Q(position_id__name__icontains=search) |
                                             Q(user_id__username__icontains=search) |
                                             Q(user_id__email__icontains=search)).exclude(Q(user_id=request.user.id))
+
+        elif request.POST.get('change_mail', False):
+            mail, user_id = request.POST['change_mail'].split(',')
+            user = User.objects.get(id=user_id)
+            user.email = mail
+            user.save()
 
     return render(request, 'crm/user_management.html', {'all_users': all_users})
 

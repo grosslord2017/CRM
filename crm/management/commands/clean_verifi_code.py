@@ -13,7 +13,7 @@ class Command(BaseCommand):
             time_1 = datetime.strptime(str(code.time_create).split('.')[0], "%H:%M:%S")
             time_2 = datetime.strptime(str(time_now).split('.')[0], "%H:%M:%S")
             delta_time = time_2 - time_1
-            if delta_time.seconds > 30:
+            if delta_time.seconds > 60:
                 code.delete()
             else:
                 continue
