@@ -518,7 +518,6 @@ def user_management(request):
     all_users = Profile.objects.filter(~Q(user_id=request.user.id))
 
     if request.method == 'POST':
-        # print(request.POST)
 
         if request.POST.get('delete', False) or request.POST.get('permission', False):
             try:
