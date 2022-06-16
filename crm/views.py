@@ -103,6 +103,10 @@ def user_registration(request):
                 messages.error(request, 'Passwords don\'t match.')
                 return HttpResponseRedirect('/registration/')
 
+            if not verification_login(user['username']):
+                messages.error(request, 'login must be minimum 4-16 characters, only numbers and letters')
+                return HttpResponseRedirect('/registration/')
+
             if not password_security_check(user['password']):
                 mes = 'Password must be at least 8 characters long, ' \
                       'contain uppercase and lowercase characters, and contain numbers'
@@ -132,12 +136,20 @@ def edit_profile(request):
     if not get_or_none(Profile, user_id=request.user.id):
         return HttpResponseRedirect('/')
 
-    department = Group.objects.all()
+    group = Group.objects.all()
 
     if request.method == 'POST':
         user_form = UserEditForm(instance=request.user, data=request.POST)
         profile_form = ProfileEditForm(instance=request.user.profile, data=request.POST)
+
         if user_form.is_valid() and profile_form.is_valid():
+            if request.user.is_superuser:
+                department_form = DepartmentEditForm(request.POST)
+                if department_form.is_valid():
+                    department = department_form.cleaned_data
+                    profile = Profile.objects.get(user_id=request.user.id)
+                    profile.department = department['department']
+                    profile.position = department['position']
             user_date = user_form.cleaned_data
             profile_date = profile_form.cleaned_data
 
@@ -150,6 +162,7 @@ def edit_profile(request):
 
             user_form.save()
             profile_form.save()
+            profile.save()
             messages.success(request, 'Profile updated successfully')
             return HttpResponseRedirect('/')
 
@@ -160,10 +173,12 @@ def edit_profile(request):
             profile_form = ProfileEditForm()
 
     user_form = UserEditForm(instance=request.user)
+    department_form = DepartmentEditForm()
 
     return render(request, 'crm/edit_profile.html', {'user_form': user_form,
                                                      'profile_form': profile_form,
-                                                     'depart': department})
+                                                     'department_form': department_form,
+                                                     'group': group})
 
 @login_required
 def task_create(request):
@@ -551,6 +566,14 @@ def user_management(request):
 # подобное есть в edit_profile - посмотреть и подправить
 def verification_email(email):
     if get_or_none(User, email=email):
+        return True
+    else:
+        return False
+
+def verification_login(login):
+    # minimum 4 symbols
+    pattern = r'^([0-9]*[a-zA-Z][0-9]*){4,16}$'
+    if re.search(pattern, login):
         return True
     else:
         return False

@@ -28,7 +28,24 @@
                     {{ field.errors }}
                 {% endfor %}
 
-            <hr>
+                {% if user.is_superuser %}
+                    {% for department in department_form %}
+                        {% if department.name == 'department' %}
+                            <label for="{{ department.name }}">{{ department.name }}</label>
+                            <select id="department" name="{{ department.name }}">
+                                <option value="0">Choose your department</option>
+                                {% for g in group %}
+                                    <option value="{{ g.id }}">{{ g.name }}</option>
+                                {% endfor %}
+                            </select>
+
+                        {% elif department.name == 'position' %}
+                                <label for="{{ department.name }}">{{ department.name }}</label>
+                                <select id="position" name="{{ department.name }}">
+                                </select>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
 
             <button type="submit" class="editbtn">Save changes</button>
 
@@ -36,39 +53,39 @@
 
     </form>
 
-<!--    <script>-->
-<!--        var positionURL = "{% url 'choice_position' %}";-->
-<!--        csrfToken = '{{ csrf_token }}';-->
+    <script>
+        var positionURL = "{% url 'choice_position' %}";
+        csrfToken = '{{ csrf_token }}';
 
-<!--        document.getElementById("department").onchange = function() {-->
-<!--            var depId = document.getElementById('department').value;-->
+        document.getElementById("department").onchange = function() {
+            var depId = document.getElementById('department').value;
 
-<!--            var xmlhttp = new XMLHttpRequest();-->
-<!--            xmlhttp.open('POST', positionURL);-->
-<!--            xmlhttp.setRequestHeader('Content-Type', 'application/json');-->
-<!--            xmlhttp.setRequestHeader('X-CSRFToken', csrfToken);-->
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open('POST', positionURL);
+            xmlhttp.setRequestHeader('Content-Type', 'application/json');
+            xmlhttp.setRequestHeader('X-CSRFToken', csrfToken);
 
-<!--            xmlhttp.send(JSON.stringify({depId: depId}));-->
+            xmlhttp.send(JSON.stringify({depId: depId}));
 
-<!--            xmlhttp.onreadystatechange = function () {-->
+            xmlhttp.onreadystatechange = function () {
 
-<!--                if (this.readyState === 4 && this.status === 200) {-->
-<!--                    var response = JSON.parse(this.responseText);-->
-<!--                    var allPosition = response['pos_l']-->
-<!--                    console.log(allPosition)-->
+                if (this.readyState === 4 && this.status === 200) {
+                    var response = JSON.parse(this.responseText);
+                    var allPosition = response['pos_l']
+                    console.log(allPosition)
 
-<!--                    // clean option list //-->
-<!--                    var pos = document.getElementById('position');-->
-<!--                    while (pos.options.length) {-->
-<!--                        pos.options[0] = null;-->
-<!--                    }-->
+                    // clean option list //
+                    var pos = document.getElementById('position');
+                    while (pos.options.length) {
+                        pos.options[0] = null;
+                    }
 
-<!--                    for (i = 0; i < allPosition.length; i++) {-->
-<!--                        position.append(new Option(allPosition[i][0], allPosition[i][1]))-->
-<!--                    }-->
-<!--                }-->
-<!--            }-->
-<!--        }-->
-<!--    </script>-->
+                    for (i = 0; i < allPosition.length; i++) {
+                        position.append(new Option(allPosition[i][0], allPosition[i][1]))
+                    }
+                }
+            }
+        }
+    </script>
 
 {% endblock %}
