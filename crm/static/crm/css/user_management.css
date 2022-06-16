@@ -50,6 +50,7 @@ form.example::after {
     display: table;
 }
 
+/* edit email button*/
 form button {
     background-color: #001e9f;
     color: white;

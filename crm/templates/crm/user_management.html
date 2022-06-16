@@ -4,61 +4,132 @@
 {% block static_files%}
     <link rel="stylesheet" href="{% static 'crm/css/user_management.css' %}">
     <script src="{% static 'crm/js/confirm_delete_and_change.js' %}"></script>
+
+<style>
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    border: 1px solid #ddd;
+}
+
+th, td {
+    text-align: left;
+    padding: 16px;
+}
+
+/* Search */
+body {
+    font-family: Arial;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+form.example input[type=text] {
+    padding: 10px;
+    font-size: 17px;
+    border: 1px solid grey;
+    float: left;
+    width: 80%;
+    background: #f1f1f1;
+}
+
+form.example button {
+    float: left;
+    width: 20%;
+    padding: 10px;
+    background: #2196F3;
+    color: white;
+    font-size: 17px;
+    border: 1px solid grey;
+    border-left: none;
+    cursor: pointer;
+}
+
+form.example button:hover {
+    background: #0b7dda;
+}
+
+form.example::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+/* edit email button*/
+button {
+    background-color: #001e9f;
+    color: white;
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+.up_delet, .edit {
+    display: inline-block;
+}
+
+</style>
+
 {% endblock %}
 
 
 {% block body %}
     <h2>Users list</h2>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <form class="example" method="POST">
-        {% csrf_token %}
-        <input type="text" placeholder="Search.." name="search">
-        <button type="submit"><i class="fa fa-search"></i></button>
-    </form>
+    <div class="all">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <form class="example" method="POST">
+            {% csrf_token %}
+            <input type="text" placeholder="Search.." name="search">
+            <button type="submit"><i class="fa fa-search"></i></button>
+        </form>
 
-    <table>
-        <thead>
-            <tr>
-                <th>First / Last name</th>
-                <th>Email</th>
-                <th>Telephone</th>
-                <th>Login</th>
-                <th>Department</th>
-                <th>Position</th>
-                <th>Delete/Up to admin</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in all_users %}
-                <tr id="{{ user.id }}">
-                    <td>{{ user.name }} {{ user.surname }}</td>
-                    <td class="mail">
-                        <form method="POST">
-                            {% csrf_token %}
-                                {{ user.user.email }}
-                                <button name="change_mail" value="{{ user.user.email }}"
-                                    onclick="return mail({{ user.id }})">edit</button>
-                        </form>
-                    </td>
-                    <td>{{ user.telephone }}</td>
-                    <td>{{ user.user }}</td>
-                    <td>{{ user.department }}</td>
-                    <td>{{ user.position.name }}</td>
-                    <td>
-                        <form method="POST">
-                        {% csrf_token %}
-                            <button name="delete" value="{{ user.user }}" onclick="return ok()">delete</button>
-                            {% if user.user.is_superuser %}
-                                <button name="permission" value="{{ user.user }}">down to user</button>
-                            {% else %}
-                                <button name="permission" value="{{ user.user }}">up to admin</button>
-                            {% endif %}
-                        </form>
-                    </td>
+        <table>
+            <thead>
+                <tr>
+                    <th>First / Last name</th>
+                    <th>Email</th>
+                    <th>Telephone</th>
+                    <th>Login</th>
+                    <th>Department</th>
+                    <th>Position</th>
+                    <th>Delete/Up to admin</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for user in all_users %}
+                    <tr id="{{ user.id }}">
+                        <td>{{ user.name }} {{ user.surname }}</td>
+                        <td>{{ user.user.email }}</td>
+                        <td>{{ user.telephone }}</td>
+                        <td>{{ user.user }}</td>
+                        <td>{{ user.department }}</td>
+                        <td>{{ user.position.name }}</td>
+                        <td>
+                            <form class="up_delet" method="POST">
+                            {% csrf_token %}
+                                <button name="delete" value="{{ user.user }}" onclick="return ok()">delete</button>
+                                {% if user.user.is_superuser %}
+                                    <button name="permission" value="{{ user.user }}">down to user</button>
+                                {% else %}
+                                    <button name="permission" value="{{ user.user }}">up to admin</button>
+                                {% endif %}
+<!--                                <button name="edit" value="{{ user.user.id }}">edit user</button>-->
+                            </form>
+                            <button class="edit"><a href="{% url 'admin_redactor' pk=user.user.id %}">edit user</a></button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
 {% endblock %}

@@ -1,7 +1,7 @@
 function ok() {
     return confirm('Are you sure you want to delete this user??');
 }
-
+/*
 function mail(id) {
     var user = document.getElementById(id);
     var change_mail = user.querySelector("[name='change_mail']").value;
@@ -18,3 +18,4 @@ function mail(id) {
         return false;
     }
 }
+*/

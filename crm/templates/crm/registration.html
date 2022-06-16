@@ -15,9 +15,8 @@
                 <hr>
                     {% for field in user_form %}
                         <b>{{ field.label_tag }}</b>
-                        {{ field.help_text }}
-                        {{ field.errors }}
                         {{ field }}
+                        {{ field.errors }}
                     {% endfor %}
 
                 <hr>

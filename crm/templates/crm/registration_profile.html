@@ -14,36 +14,28 @@
 
                 <hr id="{{ new_user }}">
 
-                    {% for f in user_filling_form %}
-                        {% if f.name == 'department' %}
+                    {% for field in profile_form %}
+                        {{ field.label_tag }}
+                        {{ field }}
+                    {% endfor %}
 
-                            <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
-                            <select id="department" name="{{ f.name }}" required>
+                    {% for department in department_form %}
+                        {% if department.name == 'department' %}
+
+                            <label for="{{ department.name }}">{{ department.name }}</label>
+                            <select id="department" name="{{ department.name }}" required>
                                 <option value="0">Choose your department</option>
                                 {% for g in group %}
                                     <option value="{{ g.id }}">{{ g.name }}</option>
                                 {% endfor %}
                             </select>
 
-                        {% elif f.name == 'position' %}
-                                <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
-                                <select id="position" name="{{ f.name }}" required>
+                        {% elif department.name == 'position' %}
+                                <label for="{{ department.name }}">{{ department.name }}</label>
+                                <select id="position" name="{{ department.name }}" required>
                                 </select>
-
-                        {% elif f.name == 'password' %}
-
-                            <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
-                            <input type="password" placeholder="Enter {{ f.name }}" name="{{ f.name }}" required>
-
-                        {% else %}
-
-                            <label for="{{ f.name }}"><b>{{ f.name }}</b></label>
-                            <input type="text" placeholder="Enter {{ f.name }}" name="{{ f.name }}" required>
-
                         {% endif %}
-
                     {% endfor %}
-                <hr>
 
                 <button type="submit" class="registerbtn">Register</button>
             </div>

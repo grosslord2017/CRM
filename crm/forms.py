@@ -18,28 +18,29 @@ class UserRegistrationForm(forms.ModelForm):
         fields = ('username', 'email')
 
 
-# This form is also used when editing
-class ProfileFillingForm(forms.ModelForm):
-
-    class Meta:
-        model = Profile
-        fields = ('name', 'surname', 'telephone', 'department', 'position')
-
 class UserEditForm(forms.ModelForm):
 
     class Meta:
         model = User
         fields = ('email',)
 
+class ProfileEditForm(forms.ModelForm):
+
+    class Meta:
+        model = Profile
+        fields = ('name', 'surname', 'telephone')
+
+class DepartmentEditForm(forms.ModelForm):
+
+    class Meta:
+        model = Profile
+        fields = ('department', 'position')
+
 class TaskCreateForm(forms.ModelForm):
 
     class Meta:
         model = Task
         fields = ('subject', 'final_date', 'description', 'executor')
-        # widgets = {
-        #     'final_date': SelectDateWidget(),
-        #     'description': Textarea(attrs={'cols': 80, 'rows': 20}),
-        # }
 
 class CommentCreateForm(forms.ModelForm):
 

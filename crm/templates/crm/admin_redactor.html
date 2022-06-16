@@ -1,0 +1,86 @@
+{% extends 'crm/base.html' %}
+
+{% load static %}
+{% block static_files %}
+    <link rel="stylesheet" href="{% static 'crm/css/admin_redactor.css' %}">
+{% endblock %}
+
+{% block body %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="container">
+            <h1>Profile {{ profile.name }} {{ profile.surname }}</h1>
+            <hr>
+
+                {% for field in user_form %}
+                    {{ field.label_tag }}
+                    {{ field }}
+                {% endfor %}
+
+                {% for field in profile_form %}
+                    {{ field.label_tag }}
+                    {{ field }}
+                {% endfor %}
+
+                {% for field in department_form %}
+                    {% if field.name == 'department' %}
+                        <label for="{{ field.name }}">{{ field.name }}:</label>
+                        <select id="department" name="{{ field.name }}">
+                            <option value="">Choose your department</option>
+                            {% for g in group %}
+                                <option value="{{ g.id }}">{{ g.name }}</option>
+                            {% endfor %}
+                        </select>
+
+                    {% elif field.name == 'position' %}
+                            <label for="{{ field.name }}">{{ field.name }}:</label>
+                            <select id="position" name="{{ field.name }}">
+                            </select>
+                    {% endif %}
+
+                {% endfor %}
+
+
+            <button type="submit" class="registerbtn">confirm change</button>
+        </div>
+
+    </form>
+
+
+    <script>
+        var positionURL = "{% url 'choice_position' %}";
+        csrfToken = '{{ csrf_token }}';
+
+        document.getElementById("department").onchange = function() {
+            var depId = document.getElementById('department').value;
+
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open('POST', positionURL);
+            xmlhttp.setRequestHeader('Content-Type', 'application/json');
+            xmlhttp.setRequestHeader('X-CSRFToken', csrfToken);
+
+            xmlhttp.send(JSON.stringify({depId: depId}));
+
+            xmlhttp.onreadystatechange = function () {
+
+                if (this.readyState === 4 && this.status === 200) {
+                    var response = JSON.parse(this.responseText);
+                    var allPosition = response['pos_l']
+                    console.log(allPosition)
+
+                    // clean option list //
+                    var pos = document.getElementById('position');
+                    while (pos.options.length) {
+                        pos.options[0] = null;
+                    }
+
+                    for (i = 0; i < allPosition.length; i++) {
+                        position.append(new Option(allPosition[i][0], allPosition[i][1]))
+                    }
+                }
+            }
+        }
+    </script>
+
+{% endblock %}

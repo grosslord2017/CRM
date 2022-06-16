@@ -13,9 +13,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from .models import Profile, Task, ArchiveTask, Position, Comment, VerifiCode
 from django.shortcuts import render, HttpResponseRedirect, Http404, HttpResponse
-from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, ProfileFillingForm, TaskCreateForm,\
+from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, TaskCreateForm,\
     CommentCreateForm, DepartmentCreateForm, PositionCreateForm, ChangePasswordForm, RestoreAccountForm,\
-    CreateNewPass
+    CreateNewPass, ProfileEditForm, DepartmentEditForm
 
 
 def home_crm(request):
@@ -56,6 +56,7 @@ def user_login(request):
         form = AutorizationForm()
     return render(request, 'crm/login.html', {'form': form})
 
+# переписать под 2 формі что бизбавится от одной громоздкой
 def create_profile(request):
     try:
         profil_card = request.user.profile
@@ -67,24 +68,28 @@ def create_profile(request):
     position = Position.objects.all()
 
     if request.method == 'POST':
-        user_filling_form = ProfileFillingForm(request.POST)
-        if user_filling_form.is_valid():
-            profile = user_filling_form.cleaned_data
+        profile_form = ProfileEditForm(request.POST)
+        department_form = DepartmentEditForm(request.POST)
+        if profile_form.is_valid() and department_form.is_valid():
+            profile = profile_form.cleaned_data
+            department = department_form.cleaned_data
             Profile.objects.create(
                 user=request.user,
                 name=profile['name'],
                 surname=profile['surname'],
                 telephone=profile['telephone'],
-                department_id=profile['department'].id,
-                position_id=profile['position'].id,
+                department_id=department['department'].id,
+                position_id=department['position'].id,
             )
             messages.success(request, 'Profile card created successfully!')
             return HttpResponseRedirect('/')
 
-    user_filling_form = ProfileFillingForm()
-    return render(request, 'crm/registration_profile.html', {'user_filling_form': user_filling_form,
-                                                     'group': group,
-                                                     'position': position})
+    profile_form = ProfileEditForm()
+    department_form = DepartmentEditForm()
+    return render(request, 'crm/registration_profile.html', {'profile_form': profile_form,
+                                                             'department_form': department_form,
+                                                             'group': group,
+                                                             'position': position})
 
 def user_registration(request):
     if request.user.is_authenticated:
@@ -104,65 +109,57 @@ def user_registration(request):
                 messages.error(request, mes)
                 return HttpResponseRedirect('/registration/')
 
+            if verification_email(user['email']):
+                messages.error(request, 'Email is already used')
+                return HttpResponseRedirect('/registration/')
+
             new_user = User.objects.create(
                 username=user['username'].lower(),
                 email=user['email']
             )
             new_user.set_password(user['password'])
             new_user.save()
+            messages.success(request, 'user create success')
             return render(request, 'crm/registration_done.html', {'new_user': new_user})
+        else:
+            messages.error(request, user_form.errors.as_text())
+        return HttpResponseRedirect('/registration/')
     user_form = UserRegistrationForm()
     return render(request, 'crm/registration.html', {'user_form': user_form})
 
 @login_required
 def edit_profile(request):
+    if not get_or_none(Profile, user_id=request.user.id):
+        return HttpResponseRedirect('/')
+
+    department = Group.objects.all()
+
     if request.method == 'POST':
         user_form = UserEditForm(instance=request.user, data=request.POST)
-        try:
-            profile = request.user.profile
-        except:
-            Profile.objects.create(
-                    name=request.POST['name'],
-                    surname=request.POST['surname'],
-                    telephone=request.POST['telephone'],
-                    department_id=request.POST.get('department', None),
-                    position_id=request.POST.get('position', None),
-                    user=request.user
-                )
-            user_form.save()
-            messages.success(request, 'Profile updated successfully')
-            return HttpResponseRedirect('/')
-
-        profile_form = ProfileFillingForm(instance=profile, data=request.POST)
+        profile_form = ProfileEditForm(instance=request.user.profile, data=request.POST)
         if user_form.is_valid() and profile_form.is_valid():
+            user_date = user_form.cleaned_data
+            profile_date = profile_form.cleaned_data
+
+            if User.objects.filter(email=user_date['email']).exclude(id=request.user.id):
+                messages.error(request, 'This email is already used')
+                return HttpResponseRedirect('/edit/')
+            if Profile.objects.filter(telephone=profile_date['telephone']).exclude(user_id=request.user.id):
+                messages.error(request, 'This telephone is already used')
+                return HttpResponseRedirect('/edit/')
+
             user_form.save()
             profile_form.save()
             messages.success(request, 'Profile updated successfully')
             return HttpResponseRedirect('/')
-        elif user_form.is_valid() and not profile_form.is_valid():
-            user_form.save()
-            if request.POST['department'] == '0':
-                profile = Profile.objects.get(user_id=request.user.id)
-                profile.name = request.POST['name']
-                profile.surname = request.POST['surname']
-                profile.patronymic = request.POST['patronymic']
-                profile.telephone = request.POST['telephone']
-                profile.department = profile.department
-                profile.position = profile.position
-                profile.save()
-                messages.success(request, 'Profile updated successfully')
-                return HttpResponseRedirect('/')
-        else:
-            messages.error(request, 'Error updating your profile')
-    else:
-        user_form = UserEditForm(instance=request.user)
-        try:
-            profile = request.user.profile
-            profile_form = ProfileFillingForm(instance=profile)
-        except:
-            profile_form = ProfileFillingForm()
 
-    department = Group.objects.all()
+    else:
+        try:
+            profile_form = ProfileEditForm(instance=request.user.profile)
+        except:
+            profile_form = ProfileEditForm()
+
+    user_form = UserEditForm(instance=request.user)
 
     return render(request, 'crm/edit_profile.html', {'user_form': user_form,
                                                      'profile_form': profile_form,
@@ -543,21 +540,17 @@ def user_management(request):
                                             Q(user_id__username__icontains=search) |
                                             Q(user_id__email__icontains=search)).exclude(Q(user_id=request.user.id))
 
-        elif request.POST.get('change_mail', False):
-            try:
-                mail, user_id = request.POST['change_mail'].split(',')
-                user = User.objects.get(id=user_id)
-                user.email = mail
-                user.save()
-            except:
-                pass
+        elif request.POST.get('edit', False):
+            print(request.POST)
+
+            pass
 
     return render(request, 'crm/user_management.html', {'all_users': all_users})
 
 # if email already used - error
+# подобное есть в edit_profile - посмотреть и подправить
 def verification_email(email):
-    user_by_email = get_or_none(User, email=email)
-    if user_by_email:
+    if get_or_none(User, email=email):
         return True
     else:
         return False
@@ -585,3 +578,50 @@ def password_security_check(passwd):
         return True
     else:
         return False
+
+def admin_redactor(request, pk):
+    if not request.user.is_superuser:
+        return Http404
+
+    group = Group.objects.all()
+    position = Position.objects.all()
+    profile = Profile.objects.get(user_id=pk)
+
+    if request.method == 'POST':
+        user_form = UserEditForm(request.POST)
+        profile_form = ProfileEditForm(request.POST)
+        department_form = DepartmentEditForm(request.POST)
+        if user_form.is_valid() and profile_form.is_valid():
+            messages.success(request, 'changes save successfully')
+            email = user_form.cleaned_data
+            profile_info = profile_form.cleaned_data
+            user = User.objects.get(id=pk)
+            user.email = email['email']
+            user.profile.name = profile_info['name']
+            user.profile.surname = profile_info['surname']
+            user.profile.telephone = profile_info['telephone']
+            if department_form.is_valid():
+                department = department_form.cleaned_data
+                user.profile.department = department['department']
+                user.profile.position = department['position']
+
+            user.save()
+            user.profile.save()
+            return HttpResponseRedirect('/user_management/')
+
+        elif user_form.is_valid() and profile_form.is_valid():
+            pass
+        else:
+            messages.error(request, 'fields email, name, surname, telephone must not be empty')
+
+
+    user_form = UserEditForm(instance=profile.user)
+    profile_form = ProfileEditForm(instance=profile)
+    department_form = DepartmentEditForm()
+
+    return render(request, 'crm/admin_redactor.html', {'user_form': user_form,
+                                                       'profile_form': profile_form,
+                                                       'department_form': department_form,
+                                                       'profile': profile,
+                                                        'group': group,
+                                                        'position': position})
