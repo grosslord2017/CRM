@@ -11,7 +11,7 @@ from django.http.response import JsonResponse
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
-from .models import Profile, Task, ArchiveTask, Position, Comment, VerifiCode
+from .models import Profile, Task, ArchiveTask, Position, Comment, VerifiCode, DelegateTask
 from django.shortcuts import render, HttpResponseRedirect, Http404, HttpResponse
 from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, TaskCreateForm,\
     CommentCreateForm, DepartmentCreateForm, PositionCreateForm, ChangePasswordForm, RestoreAccountForm,\
@@ -56,7 +56,6 @@ def user_login(request):
         form = AutorizationForm()
     return render(request, 'crm/login.html', {'form': form})
 
-# переписать под 2 формі что бизбавится от одной громоздкой
 def create_profile(request):
     try:
         profil_card = request.user.profile
@@ -199,6 +198,7 @@ def task_create(request):
                 task_manager_id=request.user.id,
                 executor_id=date_form['executor'].id,
             )
+            messages.success(request, 'Task created')
 
             # create and send notification
             to = Profile.objects.get(id=date_form['executor'].id).user.email
@@ -233,7 +233,7 @@ def my_task_inside(request, pk):
 
     if request.method =='POST':
         if request.POST.get('status', False):
-            delegate = request.POST.get('position', False)
+            delegate = request.POST.get('position', False) # id user.profile
             # block complete task
             if not delegate:
                 task.status_completed = True
@@ -251,6 +251,9 @@ def my_task_inside(request, pk):
 
             # block delegate task
             else:
+
+                arcive_delegate(pk, request.user.profile, delegate)
+
                 task.executor_id = delegate
                 task.save()
                 to = Profile.objects.get(id=task.executor_id).user.email
@@ -364,7 +367,7 @@ def views_completed_task(request, pk):
     return render(request, 'crm/view_task_in_archive.html', {'task': task, 'comments': comments,
                                                              'archive_task': archive_task})
 
-# ajax in registration template
+# ajax in registration, edit and admin_redactor templates
 def choice_position(request):
     department_id = json.loads(request.body).get('depId')
     pos_list = []
@@ -525,7 +528,7 @@ def restore_account(request):
 
     return render(request, 'crm/restore_account.html', {'form_email': form_email})
 
-# admin can delete users and rasie up / lower down
+# admin can delete users and raise up / lower down
 def user_management(request):
     all_users = Profile.objects.filter(~Q(user_id=request.user.id))
 
@@ -563,7 +566,6 @@ def user_management(request):
     return render(request, 'crm/user_management.html', {'all_users': all_users})
 
 # if email already used - error
-# подобное есть в edit_profile - посмотреть и подправить
 def verification_email(email):
     if get_or_none(User, email=email):
         return True
@@ -578,7 +580,6 @@ def verification_login(login):
     else:
         return False
 
-# replaces block try/except
 def get_or_none(model, *args, **kwargs):
     try:
         return model.objects.get(*args, **kwargs)
@@ -648,3 +649,15 @@ def admin_redactor(request, pk):
                                                        'profile': profile,
                                                         'group': group,
                                                         'position': position})
+
+def arcive_delegate(task_id, old_executor, new_executor): #pk, request.user.profile, id new profile
+    task = Task.objects.get(id=task_id)
+    who = f'{old_executor.surname} {old_executor.name}'
+    profile = Profile.objects.get(id=new_executor)
+    to_whom = f'{profile.surname} {profile.name}'
+
+    DelegateTask.objects.create(
+        task=task,
+        old_executor=who,
+        new_executor=to_whom,
+    )

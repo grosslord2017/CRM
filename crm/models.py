@@ -1,10 +1,7 @@
-import datetime
-import time
-
+from datetime import date
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-from datetime import date
 from django.contrib.auth.models import User, Group
 
 
@@ -56,3 +53,10 @@ class VerifiCode(models.Model):
     user_login = models.CharField(max_length=100)
     code = models.IntegerField(default=None)
     time_create = models.TimeField(default=timezone.now)
+
+class DelegateTask(models.Model):
+
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    old_executor = models.CharField(max_length=100)
+    new_executor = models.CharField(max_length=100)
+    date_delegate = models.DateField(default=date.today)

@@ -17,7 +17,6 @@ class UserRegistrationForm(forms.ModelForm):
         model = User
         fields = ('username', 'email')
 
-
 class UserEditForm(forms.ModelForm):
 
     class Meta:
