@@ -402,6 +402,7 @@ def choice_profile(request):
 
     return JsonResponse({'pos_p': pos_profile})
 
+# ajax in supervising_tasks view popup table
 def viewing_route(request):
     task_id = json.loads(request.body).get('task_id')
     route_list = DelegateTask.objects.filter(task_id=task_id)
@@ -410,7 +411,6 @@ def viewing_route(request):
         for element in route_list:
             temp = [element.old_executor, element.new_executor, str(element.date_delegate)]
             route.append(temp)
-    print(route)
 
     return JsonResponse({'route': route})
 

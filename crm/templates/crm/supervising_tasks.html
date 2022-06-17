@@ -61,11 +61,6 @@
                 </tr>
             </thead>
             <tbody id="table_body">
-<!--                <tr>-->
-<!--                    <th>1</th>-->
-<!--                    <th>1</th>-->
-<!--                    <th>1</th>-->
-<!--                </tr>-->
             </tbody>
         </table>
         <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
@@ -89,20 +84,25 @@
                 if (this.readyState === 4 && this.status === 200) {
                     var response = JSON.parse(this.responseText);
                     var route = response['route'];
-                    console.log(route)
 
                     var table = document.getElementById("table_body");
-                    for (let i = 0; i < route.length; i++) {
-                        let tr = '<tr>'; // создаем строку таблицы
-                        for (let j = 0; j < route[i].length; j++ ) {
-                            tr += route[i][0]; // добавляем столбцы в строку
-                            tr += route[i][1];
-                            tr += route[i][2];
-                            tr += '</tr>';
-                            console.log(tr);
 
+                    <!--   clear table   -->
+                    var rowCount = table.rows.length;
+                    for (var x = rowCount-1; x >= 0; x--) {
+                        table.deleteRow(x);
+                    }
+
+                    <!--  filling table  -->
+                    for  (let i = 0; i < route.length; i++) {
+                        var rowNode = document.createElement("tr");
+                        for (j = 0; j < route[i].length; j++) {
+                            var cellNode = document.createElement("th");
+                            var textNode = document.createTextNode(route[i][j]);
+                            cellNode.append(textNode);
+                            rowNode.append(cellNode);
                         }
-                        table.row[i].append(tr);
+                        table.appendChild(rowNode);
                     }
 
                     document.getElementById("myForm").style.display = "block";
