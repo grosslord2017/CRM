@@ -39,7 +39,6 @@
                             <th class="not_completed">NOT Completed</th>
                         {% endif %}
                         <th>
-<!--                            <button id="route" value="{{ task.id }}" class="open-button" onclick="openForm()">task route</button>-->
                             <button class="open-button" onclick="openForm({{ task.id }})">task route</button>
                         </th>
                     </tr>
@@ -76,6 +75,7 @@
             xmlhttp.open('POST', positionURL);
             xmlhttp.setRequestHeader('Content-Type', 'application/json');
             xmlhttp.setRequestHeader('X-CSRFToken', csrfToken);
+            console.log(id);
 
             xmlhttp.send(JSON.stringify({task_id: id}));
 
@@ -87,13 +87,11 @@
 
                     var table = document.getElementById("table_body");
 
-                    <!--   clear table   -->
                     var rowCount = table.rows.length;
                     for (var x = rowCount-1; x >= 0; x--) {
                         table.deleteRow(x);
                     }
 
-                    <!--  filling table  -->
                     for  (let i = 0; i < route.length; i++) {
                         var rowNode = document.createElement("tr");
                         for (j = 0; j < route[i].length; j++) {
@@ -109,6 +107,11 @@
 
                 }
             }
+        }
+
+
+        function closeForm() {
+            document.getElementById("myForm").style.display = "none";
         }
     </script>
 

@@ -404,6 +404,7 @@ def choice_profile(request):
 
 # ajax in supervising_tasks view popup table
 def viewing_route(request):
+    print(request)
     task_id = json.loads(request.body).get('task_id')
     route_list = DelegateTask.objects.filter(task_id=task_id)
     route = []
