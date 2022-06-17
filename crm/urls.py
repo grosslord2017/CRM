@@ -21,6 +21,7 @@ urlpatterns = [
     path('completed_task/<int:pk>/', views.views_completed_task, name='completed_task'),
     path('choice_position', views.choice_position, name='choice_position'),
     path('choice_profile', views.choice_profile, name='choice_profile'),
+    path('viewing_route', views.viewing_route, name='viewing_route'),
     path('create_workplace/', views.create_workplace, name='create_workplace'),
     path('change_password/', views.change_password, name='change_password'),
     path('restore_account/', views.restore_account, name='restore_account'),

@@ -20,6 +20,7 @@
                     <th>Topic</th>
                     <th>Assignee</th>
                     <th>Status</th>
+                    <th>Route</th>
                 </tr>
             </thead>
 
@@ -37,12 +38,78 @@
                         {% else %}
                             <th class="not_completed">NOT Completed</th>
                         {% endif %}
+                        <th>
+<!--                            <button id="route" value="{{ task.id }}" class="open-button" onclick="openForm()">task route</button>-->
+                            <button class="open-button" onclick="openForm({{ task.id }})">task route</button>
+                        </th>
                     </tr>
                 {% endif %}
             {% endfor %}
             </tbody>
 
         </table>
+
     </div>
+
+    <div class="form-popup" id="myForm">
+        <table id="route" class="table_route">
+            <thead>
+                <tr class="title">
+                    <th>Who</th>
+                    <th>Whom</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody id="table_body">
+<!--                <tr>-->
+<!--                    <th>1</th>-->
+<!--                    <th>1</th>-->
+<!--                    <th>1</th>-->
+<!--                </tr>-->
+            </tbody>
+        </table>
+        <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+    </div>
+
+    <script>
+        var positionURL = "{% url 'viewing_route' %}";
+        csrfToken = '{{ csrf_token }}';
+
+        function openForm(id) {
+
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open('POST', positionURL);
+            xmlhttp.setRequestHeader('Content-Type', 'application/json');
+            xmlhttp.setRequestHeader('X-CSRFToken', csrfToken);
+
+            xmlhttp.send(JSON.stringify({task_id: id}));
+
+            xmlhttp.onreadystatechange = function () {
+
+                if (this.readyState === 4 && this.status === 200) {
+                    var response = JSON.parse(this.responseText);
+                    var route = response['route'];
+                    console.log(route)
+
+                    var table = document.getElementById("table_body");
+                    for (let i = 0; i < route.length; i++) {
+                        let tr = '<tr>'; // создаем строку таблицы
+                        for (let j = 0; j < route[i].length; j++ ) {
+                            tr += route[i][0]; // добавляем столбцы в строку
+                            tr += route[i][1];
+                            tr += route[i][2];
+                            tr += '</tr>';
+                            console.log(tr);
+
+                        }
+                        table.row[i].append(tr);
+                    }
+
+                    document.getElementById("myForm").style.display = "block";
+
+                }
+            }
+        }
+    </script>
 
 {% endblock %}

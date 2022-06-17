@@ -295,6 +295,7 @@ def supervising_tasks(request):
         return HttpResponseRedirect('/')
     user = request.user.id
     tasks = Task.objects.filter(task_manager_id=user).all()
+
     return render(request, 'crm/supervising_tasks.html', {'tasks': tasks})
 
 @login_required
@@ -400,6 +401,18 @@ def choice_profile(request):
                 pos_profile.append(prof)
 
     return JsonResponse({'pos_p': pos_profile})
+
+def viewing_route(request):
+    task_id = json.loads(request.body).get('task_id')
+    route_list = DelegateTask.objects.filter(task_id=task_id)
+    route = []
+    if route_list:
+        for element in route_list:
+            temp = [element.old_executor, element.new_executor, str(element.date_delegate)]
+            route.append(temp)
+    print(route)
+
+    return JsonResponse({'route': route})
 
 # check if this user has a task, if not - return 404
 def task_and_user_verification(request, task, flag):
