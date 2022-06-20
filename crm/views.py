@@ -444,29 +444,41 @@ def create_workplace(request):
         form_dep = DepartmentCreateForm(request.POST)
         form_pos = PositionCreateForm(request.POST)
 
-        print(request.POST)
+# продумать!!!!!!
         if request.POST.get('delete', False):
-            pass
+            del_positions = request.POST.getlist('delete')
+            for del_position in del_positions:
+                position = Position.objects.get(id=del_position)
+                try:
+                    position.delete()
+                    messages.success(request, 'Position delete success')
+                except:
+                    messages.error(request, f'there are users in {position.name} position')
+
 
         if not request.POST.get('department_fk', False) and form_dep.is_valid():
             form = form_dep.cleaned_data
-            if not get_or_none(Group, name=form['name']):
+            if not get_or_none(Group, name=form['name'].lower()):
                 Group.objects.create(
-                    name=form['name']
+                    name=form['name'].lower()
                 )
                 messages.success(request, 'Department create successfully')
 
                 return HttpResponseRedirect('/create_workplace/')
+            else:
+                messages.error(request, 'Department is already create')
         else:
             if form_pos.is_valid():
                 form = form_pos.cleaned_data
-                if not get_or_none(Position, name=form['name']):
+                if not get_or_none(Position, name=form['name'].lower()):
                     Position.objects.create(
                         department_fk=form['department_fk'],
-                        name=form['name']
+                        name=form['name'].lower()
                     )
                     messages.success(request, 'Position create successfully')
                     return HttpResponseRedirect('/create_workplace/')
+                else:
+                    messages.error(request, 'Position is already create')
     else:
         form_dep = DepartmentCreateForm()
         form_pos = PositionCreateForm()

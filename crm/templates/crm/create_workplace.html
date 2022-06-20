@@ -48,7 +48,7 @@
                 {% csrf_token %}
                 {% for p in pos %}
                     <p>
-                        <input type="checkbox" id="{{ p.id }}" name="{{ p.name }}" value="{{ p.id }}">
+                        <input type="checkbox" id="{{ p.id }}" name="delete" value="{{ p.id }}">
                         {{ p.name }}
                     </p>
                 {% endfor %}
