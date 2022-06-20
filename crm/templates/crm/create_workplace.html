@@ -8,11 +8,12 @@
 
 {% block body %}
 
-    <p>Click on the buttons inside the tabbed menu:</p>
+    <p class="title-text">Click on the buttons inside the tabbed menu:</p>
     <div class="container">
         <div class="tab">
             <button class="tablinks" onclick="openWorkplace(event, 'Department')">Department</button>
             <button class="tablinks" onclick="openWorkplace(event, 'Position')">Position</button>
+            <button class="tablinks" onclick="openWorkplace(event, 'Delete')">Delete</button>
         </div>
 
         <div id="Department" class="tabcontent">
@@ -37,11 +38,26 @@
                         {% endif %}
                     {% endfor %}
 
-<!--                    {{ form_pos}}-->
                 <button type="submit" class="createbtn">create</button>
 
             </form>
         </div>
+
+        <div id="Delete" class="tabcontent">
+            <form method="POST">
+                {% csrf_token %}
+                {% for p in pos %}
+                    <p>
+                        <input type="checkbox" id="{{ p.id }}" name="{{ p.name }}" value="{{ p.id }}">
+                        {{ p.name }}
+                    </p>
+                {% endfor %}
+
+                <button type="submit" class="createbtn">delete</button>
+
+            </form>
+        </div>
+
     </div>
 
 {% endblock %}

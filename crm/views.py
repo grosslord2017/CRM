@@ -11,8 +11,8 @@ from django.http.response import JsonResponse
 from django.contrib.auth.models import Group, User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
-from .models import Profile, Task, ArchiveTask, Position, Comment, VerifiCode, DelegateTask
 from django.shortcuts import render, HttpResponseRedirect, Http404, HttpResponse
+from .models import Profile, Task, ArchiveTask, Position, Comment, VerifiCode, DelegateTask
 from .forms import AutorizationForm, UserRegistrationForm, UserEditForm, TaskCreateForm,\
     CommentCreateForm, DepartmentCreateForm, PositionCreateForm, ChangePasswordForm, RestoreAccountForm,\
     CreateNewPass, ProfileEditForm, DepartmentEditForm
@@ -295,8 +295,14 @@ def supervising_tasks(request):
         return HttpResponseRedirect('/')
     user = request.user.id
     tasks = Task.objects.filter(task_manager_id=user).all()
+    delegates = DelegateTask.objects.all()
+    available = []
+    for delegate in delegates:
+        available.append(delegate.task_id)
+    available = set(available)
 
-    return render(request, 'crm/supervising_tasks.html', {'tasks': tasks})
+    return render(request, 'crm/supervising_tasks.html', {'tasks': tasks,
+                                                          'available': available})
 
 @login_required
 def supervising_task_inside(request, pk):
@@ -432,10 +438,16 @@ def task_and_user_verification(request, task, flag):
 # create department and position
 def create_workplace(request):
     dep = Group.objects.all()
+    pos = Position.objects.all()
     if request.method == 'POST':
 
         form_dep = DepartmentCreateForm(request.POST)
         form_pos = PositionCreateForm(request.POST)
+
+        print(request.POST)
+        if request.POST.get('delete', False):
+            pass
+
         if not request.POST.get('department_fk', False) and form_dep.is_valid():
             form = form_dep.cleaned_data
             if not get_or_none(Group, name=form['name']):
@@ -460,7 +472,8 @@ def create_workplace(request):
         form_pos = PositionCreateForm()
     return render(request, 'crm/create_workplace.html', {'form_dep': form_dep,
                                                          'form_pos': form_pos,
-                                                         'dep': dep})
+                                                         'dep': dep,
+                                                         'pos': pos})
 
 # user can change the password
 @login_required
@@ -571,11 +584,6 @@ def user_management(request):
                                             Q(position_id__name__icontains=search) |
                                             Q(user_id__username__icontains=search) |
                                             Q(user_id__email__icontains=search)).exclude(Q(user_id=request.user.id))
-
-        elif request.POST.get('edit', False):
-            print(request.POST)
-
-            pass
 
     return render(request, 'crm/user_management.html', {'all_users': all_users})
 

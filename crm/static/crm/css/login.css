@@ -14,7 +14,7 @@ body {
 }
 
 /* style inputs and link buttons */
-input,
+input[type="text"], input[type="password"], input[type="submit"],
 .btn {
     width: 100%;
     padding: 12px;

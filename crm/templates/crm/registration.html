@@ -19,6 +19,8 @@
                         {{ field.errors }}
                     {% endfor %}
 
+                Show Password <input type="checkbox" onclick="show()">
+
                 <hr>
 
                 <button type="submit" class="registerbtn">Create</button>
@@ -29,5 +31,24 @@
         </div>
 
     </form>
+
+
+    <script>
+
+        function show() {
+            var x = document.querySelector('#id_password');
+            var y = document.querySelector('#id_password2');
+            console.log(x);
+            console.log(y);
+            if ((x.type === "password") && (y.type === "password")) {
+                x.type = "text";
+                y.type = "text";
+            } else {
+                x.type = "password";
+                y.type = "password";
+            }
+        }
+
+    </script>
 
 {% endblock %}

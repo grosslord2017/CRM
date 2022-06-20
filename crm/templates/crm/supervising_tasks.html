@@ -39,7 +39,11 @@
                             <th class="not_completed">NOT Completed</th>
                         {% endif %}
                         <th>
-                            <button class="open-button" onclick="openForm({{ task.id }})">task route</button>
+                            {% if task.id in available %}
+                                <button class="open-button" onclick="openForm({{ task.id }})">task route</button>
+                            {% else %}
+                                no route
+                            {% endif %}
                         </th>
                     </tr>
                 {% endif %}

@@ -139,15 +139,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-
-# STATIC_URL = '/static/'
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-# STATICFILE_DIRS = [
-#       "static/images",
-#       "static/css",
-#       "staticfiles",
-# ]
-
 # AWS_ACCESS_KEY_ID = 'AKIATYRPCMJQNPLNOLOU'
 # AWS_SECRET_ACCESS_KEY = '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'
 # AWS_STORAGE_BUCKET_NAME = 'corpcrm'

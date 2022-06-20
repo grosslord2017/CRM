@@ -4,81 +4,6 @@
 {% block static_files%}
     <link rel="stylesheet" href="{% static 'crm/css/user_management.css' %}">
     <script src="{% static 'crm/js/confirm_delete_and_change.js' %}"></script>
-
-<style>
-
-table {
-    border-collapse: collapse;
-    border-spacing: 0;
-    width: 100%;
-    border: 1px solid #ddd;
-}
-
-th, td {
-    text-align: left;
-    padding: 16px;
-}
-
-/* Search */
-body {
-    font-family: Arial;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-form.example input[type=text] {
-    padding: 10px;
-    font-size: 17px;
-    border: 1px solid grey;
-    float: left;
-    width: 80%;
-    background: #f1f1f1;
-}
-
-form.example button {
-    float: left;
-    width: 20%;
-    padding: 10px;
-    background: #2196F3;
-    color: white;
-    font-size: 17px;
-    border: 1px solid grey;
-    border-left: none;
-    cursor: pointer;
-}
-
-form.example button:hover {
-    background: #0b7dda;
-}
-
-form.example::after {
-    content: "";
-    clear: both;
-    display: table;
-}
-
-/* edit email button*/
-button {
-    background-color: #001e9f;
-    color: white;
-    padding: 4px 8px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-a {
-    color: white;
-    text-decoration: none;
-}
-
-.up_delet, .edit {
-    display: inline-block;
-}
-
-</style>
-
 {% endblock %}
 
 
@@ -123,7 +48,6 @@ a {
                                 {% else %}
                                     <button name="permission" value="{{ user.user }}">up to admin</button>
                                 {% endif %}
-<!--                                <button name="edit" value="{{ user.user.id }}">edit user</button>-->
                             </form>
                             <button class="edit"><a href="{% url 'admin_redactor' pk=user.user.id %}">edit user</a></button>
                         </td>
