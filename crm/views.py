@@ -149,6 +149,12 @@ def edit_profile(request):
                     profile = Profile.objects.get(user_id=request.user.id)
                     profile.department = department['department']
                     profile.position = department['position']
+                else:
+                    profile = Profile.objects.get(user_id=request.user.id)
+                    profile.department = profile.department
+                    profile.position = profile.position
+                    messages.error(request, 'Position and department is not changes')
+
             user_date = user_form.cleaned_data
             profile_date = profile_form.cleaned_data
 
