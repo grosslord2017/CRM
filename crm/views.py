@@ -444,7 +444,6 @@ def create_workplace(request):
         form_dep = DepartmentCreateForm(request.POST)
         form_pos = PositionCreateForm(request.POST)
 
-# продумать!!!!!!
         if request.POST.get('delete', False):
             del_positions = request.POST.getlist('delete')
             for del_position in del_positions:
