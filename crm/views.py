@@ -72,6 +72,11 @@ def create_profile(request):
         if profile_form.is_valid() and department_form.is_valid():
             profile = profile_form.cleaned_data
             department = department_form.cleaned_data
+
+            if Profile.objects.filter(telephone=profile['telephone']):
+                messages.error(request, 'This telephone is already used')
+                return HttpResponseRedirect('/registration_profile/')
+
             Profile.objects.create(
                 user=request.user,
                 name=profile['name'],
@@ -141,19 +146,20 @@ def edit_profile(request):
         user_form = UserEditForm(instance=request.user, data=request.POST)
         profile_form = ProfileEditForm(instance=request.user.profile, data=request.POST)
 
+
         if user_form.is_valid() and profile_form.is_valid():
+            profile = Profile.objects.get(user_id=request.user.id)
             if request.user.is_superuser:
                 department_form = DepartmentEditForm(request.POST)
                 if department_form.is_valid():
                     department = department_form.cleaned_data
-                    profile = Profile.objects.get(user_id=request.user.id)
                     profile.department = department['department']
                     profile.position = department['position']
                 else:
-                    profile = Profile.objects.get(user_id=request.user.id)
                     profile.department = profile.department
                     profile.position = profile.position
                     messages.error(request, 'Position and department is not changes')
+                profile.save()
 
             user_date = user_form.cleaned_data
             profile_date = profile_form.cleaned_data
@@ -167,7 +173,6 @@ def edit_profile(request):
 
             user_form.save()
             profile_form.save()
-            profile.save()
             messages.success(request, 'Profile updated successfully')
             return HttpResponseRedirect('/')
 
@@ -607,14 +612,6 @@ def user_management(request):
 # if email already used - error
 def verification_email(email):
     if get_or_none(User, email=email):
-        return True
-    else:
-        return False
-
-def verification_login(login):
-    # minimum 4 symbols
-    pattern = r'^([0-9]*[a-zA-Z][0-9]*){4,16}$'
-    if re.search(pattern, login):
         return True
     else:
         return False
