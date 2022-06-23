@@ -616,6 +616,14 @@ def verification_email(email):
     else:
         return False
 
+def verification_login(login):
+    # minimum 4 symbols
+    pattern = r'^([0-9]*[a-zA-Z][0-9]*){4,16}$'
+    if re.search(pattern, login):
+        return True
+    else:
+        return False
+
 def get_or_none(model, *args, **kwargs):
     try:
         return model.objects.get(*args, **kwargs)
