@@ -17,6 +17,7 @@
             <thead>
                 <tr class="title">
                     <th>Start date</th>
+                    <th>Final date</th>
                     <th>Topic</th>
                     <th>Assignee</th>
                     <th>Status</th>
@@ -29,6 +30,7 @@
                 {% if task.archived == False %}
                     <tr>
                         <th>{{ task.date_create }}</th>
+                        <th>{{ task.final_date }}</th>
                         <th>
                             <a href="{% url 'supervising_task_inside' pk=task.id %}">{{ task.subject }}</a>
                         </th>
