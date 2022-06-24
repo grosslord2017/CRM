@@ -29,7 +29,7 @@ class ProfileEditForm(forms.ModelForm):
         model = Profile
         fields = ('name', 'surname', 'telephone')
         help_texts = {
-            'telephone': '10-digit phone number (must not include spaces or special characters)'
+            'telephone': '10-digit phone number (no spaces and special characters)'
         }
 
 class DepartmentEditForm(forms.ModelForm):

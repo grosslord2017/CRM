@@ -33,8 +33,10 @@
                         <th>{{ task.task_manager.profile.surname }} {{ task.task_manager.profile.name }}</th>
                         {% if task.status_completed == 1 %}
                             <th class="completed">Completed</th>
+                        {% elif task.final_date < date_now %}
+                            <th class="overdue">OVERDUE</th>
                         {% else %}
-                            <th class="not_completed">NOT Completed</th>
+                            <th class="not_completed">not Completed</th>
                         {% endif %}
                         <th>{{ task.final_date }}</th>
                     </tr>

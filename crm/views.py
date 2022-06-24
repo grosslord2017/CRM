@@ -241,8 +241,9 @@ def my_tasks(request):
         return HttpResponseRedirect('/')
     profile = Profile.objects.get(user_id=request.user.id)
     tasks = Task.objects.filter(executor_id=profile).all()
+    date_now = date.today()
 
-    return render(request, 'crm/my_tasks.html', {'tasks': tasks})
+    return render(request, 'crm/my_tasks.html', {'tasks': tasks, 'date_now': date_now})
 
 # page in my task
 @login_required
@@ -320,9 +321,11 @@ def supervising_tasks(request):
     for delegate in delegates:
         available.append(delegate.task_id)
     available = set(available)
+    date_now = date.today()
 
     return render(request, 'crm/supervising_tasks.html', {'tasks': tasks,
-                                                          'available': available})
+                                                          'available': available,
+                                                          'date_now': date_now})
 
 @login_required
 def supervising_task_inside(request, pk):
@@ -430,7 +433,6 @@ def choice_profile(request):
 
 # ajax in supervising_tasks view popup table
 def viewing_route(request):
-    print(request)
     task_id = json.loads(request.body).get('task_id')
     route_list = DelegateTask.objects.filter(task_id=task_id)
     route = []
