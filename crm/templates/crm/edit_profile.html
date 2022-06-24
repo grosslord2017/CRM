@@ -11,20 +11,20 @@
     <form method="POST">
         {% csrf_token %}
         <div class="container">
-            <h1>Edit your account</h1>
-            <p>You can edit your account using the following form:</p>
+            <h1>Edit your profile</h1>
+            <p>You can edit your profile using the following form:</p>
             <hr>
                 {% for field in user_form %}
-                    <b>{{ field.label_tag }}</b>
+                    {{ field.label_tag }}
                     {{ field.help_text }}
                     {{ field.errors }}
                     <input type="email" value="{{ field.value }}" name="{{ field.name }}" required>
                 {% endfor %}
 
                 {% for field in profile_form %}
-                    <b>{{ field.label_tag }}</b>
-                    {{ field }}
+                    {{ field.label_tag }}
                     {{ field.help_text }}
+                    {{ field }}
                     {{ field.errors }}
                 {% endfor %}
 

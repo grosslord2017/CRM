@@ -28,6 +28,9 @@ class ProfileEditForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('name', 'surname', 'telephone')
+        help_texts = {
+            'telephone': '(Phone number must be 10 digits in xxxxxxxxxxxxx format)'
+        }
 
 class DepartmentEditForm(forms.ModelForm):
 

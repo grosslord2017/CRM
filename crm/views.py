@@ -73,6 +73,11 @@ def create_profile(request):
             profile = profile_form.cleaned_data
             department = department_form.cleaned_data
 
+            # validity check
+            if len(profile['telephone']) != 10:
+                messages.error(request, 'Phone number is incorrect ')
+                return HttpResponseRedirect('/registration_profile/')
+
             if Profile.objects.filter(telephone=profile['telephone']):
                 messages.error(request, 'This telephone is already used')
                 return HttpResponseRedirect('/registration_profile/')
@@ -164,8 +169,12 @@ def edit_profile(request):
             user_date = user_form.cleaned_data
             profile_date = profile_form.cleaned_data
 
+            # validity check
             if User.objects.filter(email=user_date['email']).exclude(id=request.user.id):
                 messages.error(request, 'This email is already used')
+                return HttpResponseRedirect('/edit/')
+            if len(profile_date['telephone']) != 10:
+                messages.error(request, 'Phone number is incorrect ')
                 return HttpResponseRedirect('/edit/')
             if Profile.objects.filter(telephone=profile_date['telephone']).exclude(user_id=request.user.id):
                 messages.error(request, 'This telephone is already used')

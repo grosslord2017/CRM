@@ -16,6 +16,7 @@
 
                     {% for field in profile_form %}
                         {{ field.label_tag }}
+                        {{ field.help_text }}
                         {{ field }}
                     {% endfor %}
 
