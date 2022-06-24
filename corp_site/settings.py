@@ -139,20 +139,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-# AWS_ACCESS_KEY_ID = 'AKIATYRPCMJQNPLNOLOU'
-# AWS_SECRET_ACCESS_KEY = '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'
-# AWS_STORAGE_BUCKET_NAME = 'corpcrm'
-# AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
 AWS_LOCATION = 'static'
 
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'static'),
-# ]
-
-# STATIC_URL = 'https://%s/%s/' % (AWS_S3_CUSTOM_DOMAIN, AWS_LOCATION)
 STATIC_URL = 'https://us-east-1.console.aws.amazon.com/s3/buckets/corpcrm/'
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
@@ -162,11 +153,6 @@ STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-# block google auth
-# SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '94939356186-c2tqni22q15kgt7d2s93vjs07hu5u6pc.apps.googleusercontent.com'
-# SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
-
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
@@ -175,4 +161,3 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_URL = '/auth/login/google-oauth2/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
-# SOCIAL_AUTH_URL_NAMESPACE = 'social'
