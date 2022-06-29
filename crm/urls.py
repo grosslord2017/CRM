@@ -1,5 +1,5 @@
-from django.urls import path, include
 from . import views
+from django.urls import path, include
 
 urlpatterns = [
     path('', views.home_crm, name='home_crm'),

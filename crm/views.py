@@ -30,6 +30,7 @@ def home_crm(request):
 
 def user_logout(request):
     logout(request)
+
     return HttpResponseRedirect('/')
 
 def user_login(request):
