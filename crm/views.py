@@ -653,7 +653,6 @@ def password_security_check(passwd):
     #     message = 'Password must have large and small characters, and a number.'
     #     return (False, message)
 
-# попробовать добавить проверку на {8, } - минимум символов
     if re.search(r'^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*]{8,}', passwd):
         return True
     else:
@@ -672,9 +671,13 @@ def admin_redactor(request, pk):
         profile_form = ProfileEditForm(request.POST)
         department_form = DepartmentEditForm(request.POST)
         if user_form.is_valid() and profile_form.is_valid():
-            messages.success(request, 'changes save successfully')
             email = user_form.cleaned_data
             profile_info = profile_form.cleaned_data
+
+            if len(profile_info['telephone']) != 10:
+                messages.error(request, 'Phone number is incorrect ')
+                return HttpResponseRedirect(f'/admin_redactor/{pk}/')
+
             user = User.objects.get(id=pk)
             user.email = email['email']
             user.profile.name = profile_info['name']
@@ -687,6 +690,7 @@ def admin_redactor(request, pk):
 
             user.save()
             user.profile.save()
+            messages.success(request, 'changes save successfully')
             return HttpResponseRedirect('/user_management/')
 
         elif user_form.is_valid() and profile_form.is_valid():
