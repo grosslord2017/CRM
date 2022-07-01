@@ -256,13 +256,9 @@ def my_task_inside(request, pk):
     if request.method =='POST':
         if request.POST.get('status', False):
             delegate = request.POST.get('position', False) # id user.profile
+            dep = request.POST.get('department', False)
 
-            if request.POST.get('department', False) == '0':
-                messages.error(request, 'you have not chosen whom to delegate')
-                return HttpResponseRedirect(f'/my_task/{pk}/')
-
-            # block complete task
-            if not delegate:
+            if not delegate and not dep:
                 task.status_completed = True
                 task.save()
 
@@ -275,6 +271,9 @@ def my_task_inside(request, pk):
                 except:
                     messages.error(request, 'Email was not sent')
                 return HttpResponseRedirect('/my_tasks/')
+            elif dep == '0' or not delegate:
+                messages.error(request, 'you have not chosen whom to delegate')
+                return HttpResponseRedirect(f'/my_task/{pk}/')
 
             # block delegate task
             else:
