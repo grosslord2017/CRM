@@ -256,6 +256,9 @@ def my_task_inside(request, pk):
     if request.method =='POST':
         if request.POST.get('status', False):
             delegate = request.POST.get('position', False) # id user.profile
+            if request.POST['department'] == '0':
+                messages.error(request, 'you have not chosen whom to delegate')
+                return HttpResponseRedirect(f'/my_task/{pk}/')
             # block complete task
             if not delegate:
                 task.status_completed = True
@@ -703,7 +706,6 @@ def admin_redactor(request, pk):
             pass
         else:
             messages.error(request, 'fields email, name, surname, telephone must not be empty')
-
 
     user_form = UserEditForm(instance=profile.user)
     profile_form = ProfileEditForm(instance=profile)
