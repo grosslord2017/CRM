@@ -677,6 +677,9 @@ def admin_redactor(request, pk):
             if len(profile_info['telephone']) != 10:
                 messages.error(request, 'Phone number is incorrect ')
                 return HttpResponseRedirect(f'/admin_redactor/{pk}/')
+            if Profile.objects.filter(telephone=profile_info['telephone']).exclude(user_id=pk):
+                messages.error(request, 'This telephone is already used')
+                return HttpResponseRedirect(f'/admin_redactor/{pk}/')
 
             user = User.objects.get(id=pk)
             user.email = email['email']
