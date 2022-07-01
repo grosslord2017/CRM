@@ -277,7 +277,6 @@ def my_task_inside(request, pk):
 
             # block delegate task
             else:
-
                 arcive_delegate(pk, request.user.profile, delegate)
 
                 task.executor_id = delegate
